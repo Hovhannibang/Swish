@@ -1,0 +1,170 @@
+﻿using TMPro;
+using UnityEngine;
+
+public class BallCollisionDetection : MonoBehaviour
+{
+    public BallController ballController;
+    private TouchController touchController;
+    private AudioController audioController;
+    private ShopController shopController;
+    private TimeController timeController;
+    private UIController uiController;
+    private GameObject gameOverPanel;
+    private TextMeshProUGUI score;
+    private GameObject ball;
+    private FollowBall fb;
+    private bool isColliding;
+
+    void Start()
+    {
+        ball = ballController.getBall();
+        fb = ballController.getFollowball();
+        uiController = ballController.getUIController();
+        timeController = ballController.getTimeController();
+        touchController = ballController.getTouchController();
+        audioController = ballController.getAudioController();
+        gameOverPanel = ballController.getGameOverPanel();
+        shopController = ballController.getShopController();
+        score = ballController.getScore();
+    }
+
+    void Update()
+    {
+        isColliding = false;
+    }
+
+    public void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (isColliding)
+        {
+            return;
+        }
+        isColliding = true;
+        if (collision.gameObject.tag == "destroyBall" || collision.gameObject.tag == "Obstacle" || collision.gameObject.tag == "ObstacleWallBack")
+        {
+            uiController.gameOverScore.text = score.text;
+            int intScore = int.Parse(score.text);
+            if (collision.gameObject.tag.Equals("ObstacleWallBack"))
+            {
+                if (PlayerPrefs.GetInt("ach9") == 0)
+                {
+                    PlayerPrefs.SetInt("achtakeable9", 1);
+                    uiController.activateAchievementInfo(9);
+                }
+            }
+            else if (intScore > 100)
+            {
+                ballController.getAdController().incrementRoundsSinceLastAd();
+            }
+            if (intScore >= 200 && uiController.getDifficulty() > 0 && PlayerPrefs.GetInt("ach1") == 0)
+            {
+                PlayerPrefs.SetInt("achtakeable1", 1);
+                uiController.activateAchievementInfo(1);
+            }
+            if (intScore >= 1000 && uiController.getDifficulty() > 0 && PlayerPrefs.GetInt("ach2") == 0)
+            {
+                PlayerPrefs.SetInt("achtakeable2", 1);
+                uiController.activateAchievementInfo(2);
+            }
+            if (intScore >= 2000 && uiController.getDifficulty() > 0 && PlayerPrefs.GetInt("ach3") == 0)
+            {
+                PlayerPrefs.SetInt("achtakeable3", 1);
+                uiController.activateAchievementInfo(3);
+            }
+            if (intScore >= 5000 && uiController.getDifficulty() == 2 && PlayerPrefs.GetInt("ach4") == 0)
+            {
+                PlayerPrefs.SetInt("achtakeable4", 1);
+                uiController.activateAchievementInfo(4);
+            }
+            if (intScore >= 10000 && uiController.getDifficulty() == 2 && PlayerPrefs.GetInt("ach5") == 0)
+            {
+                PlayerPrefs.SetInt("achtakeable5", 1);
+                uiController.activateAchievementInfo(5);
+            }
+            ballController.getAdController().ShowInterstitialAd();
+            uiController.setGameOverPanelComment(int.Parse(score.text));
+            gameOverPanel.SetActive(true);
+            ballController.getPauseButton().gameObject.SetActive(false);
+            timeController.setGameOver(true);
+            timeController.endSlowdown();
+            fb.StartCoroutine(fb.Shake(1f, 0.05f));
+            fb.setFollowActive(false);
+            audioController.playExplosion();
+            Vector2 lastVelocity = ballController.getBall().GetComponent<Rigidbody2D>().velocity;
+            foreach (GameObject frag in ball.GetComponent<Explodable>().fragments)
+            {
+                frag.transform.parent = null;
+                frag.SetActive(true);
+                Rigidbody2D fragRb = frag.GetComponent<Rigidbody2D>();
+                fragRb.MovePosition(new Vector2(fragRb.position.x + Random.Range(-.2f, .2f), fragRb.position.y + Random.Range(-.2f, .2f)));
+                fragRb.AddForce(new Vector2(Random.Range(-2f, 2f), Random.Range(-2f, 2f)) + lastVelocity * 0.5f, ForceMode2D.Impulse);
+                fragRb.AddTorque(Random.Range(-2f, 2f) * 2f);
+            }
+            ball.SetActive(false);
+            PlayerPrefs.SetInt("highScore", int.Parse(score.text));
+            if (PlayerPrefs.GetInt("highScore") > uiController.getHighScore())
+            {
+                uiController.setHighscoreSign(ball.transform.position.x);
+            }
+            calculateAndSetGems();
+            shopController.updateAmount();
+        }
+        else if (collision.gameObject.tag == "reset")
+        {
+            fb.setFollowActive(false);
+            audioController.playExplosion();
+            Vector2 lastVelocity = ballController.getBall().GetComponent<Rigidbody2D>().velocity;
+            foreach (GameObject frag in ball.GetComponent<Explodable>().fragments)
+            {
+                frag.transform.parent = null;
+                frag.SetActive(true);
+                Rigidbody2D fragRb = frag.GetComponent<Rigidbody2D>();
+                fragRb.MovePosition(new Vector2(fragRb.position.x + Random.Range(-.2f, .2f), fragRb.position.y + Random.Range(-.2f, .2f)));
+                fragRb.AddForce(new Vector2(Random.Range(-2f, 2f), Random.Range(-2f, 2f)) + lastVelocity * 0.5f, ForceMode2D.Impulse);
+                fragRb.AddTorque(Random.Range(-2f, 2f) * 2f);
+            }
+            ball.SetActive(false);
+            uiController.StartCoroutine(uiController.waitAndRetry());
+        }
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        ballController.getAudioController().playBounce();
+        if (touchController.setCollided(collision.gameObject))
+        {
+            timeController.endSlowdown();
+        }
+    }
+
+    private void calculateAndSetGems()
+    {
+        int scoreInt = int.Parse(score.text);
+        int gemAmount;
+        if (scoreInt < 100)
+        {
+            return;
+        }
+        else
+        {
+            gemAmount = scoreInt / 100;
+            if (uiController.getDifficulty() == 2)
+            {
+                gemAmount *= 2;
+            }
+            else if (uiController.getDifficulty() == 0)
+            {
+                gemAmount /= 2;
+            }
+            PlayerPrefs.SetInt("totalGems", ballController.getUIController().getTotalGems() + gemAmount);
+            uiController.setEarnedGems(gemAmount);
+            shopController.updateAmount();
+        }
+
+    }
+
+    public void setBallController(BallController bc)
+    {
+        ballController = bc;
+    }
+}
