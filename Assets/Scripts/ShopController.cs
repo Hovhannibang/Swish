@@ -57,9 +57,9 @@ public class ShopController : MonoBehaviour
         {9, new string[]{ "100", "#9977B4"} },
         {10, new string[]{ "200", "gem:#00D272:#009C54"} }, // Price, ParticleName;Color1;Color2
         {11, new string[]{ "200", "ballGer:#ffffff:#000000"} },
-        {12, new string[]{ "200", ""} },
-        {13, new string[]{ "200", ""} },
-        {14, new string[]{ "200", ""} },
+        {12, new string[]{ "200", "ballGer:#ffffff:#000000" } },
+        {13, new string[]{ "200", "ballGer:#ffffff:#000000" } },
+        {14, new string[]{ "200", "ballGer:#ffffff:#000000" } },
     };
 
     public GameObject[] gemButtons;
