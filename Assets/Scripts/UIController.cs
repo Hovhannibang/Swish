@@ -69,6 +69,7 @@ public class UIController : MonoBehaviour
     private Vector2 middlePanelDown = new Vector2(0, 35);
     private Vector2 screenBounds;
     private Color gray;
+    private Coroutine currentUpdateGemsCoroutine;
     public Animator ballAnimator;
     public Animator scoreAnimator;
     public Animator titlePanelAnimator;
@@ -264,7 +265,11 @@ public class UIController : MonoBehaviour
 
     public void updateTotalGems()
     {
-        StartCoroutine(updateTotalGemsCoroutine());
+        if(currentUpdateGemsCoroutine != null)
+        {
+            StopCoroutine(currentUpdateGemsCoroutine);
+        }
+        currentUpdateGemsCoroutine = StartCoroutine(updateTotalGemsCoroutine());
     }
 
     private IEnumerator updateTotalGemsCoroutine()
@@ -610,12 +615,13 @@ public class UIController : MonoBehaviour
                     achtransform.GetChild(2).GetComponent<TextMeshProUGUI>().color = gray;
                     if (reward.EndsWith("Skin") || reward.EndsWith("Trail"))
                     {
-                        Debug.Log("unlocked " + reward.Split(splitMinus)[0] + " Skin");
+                        Debug.Log("unlocked " + reward.Split(splitMinus)[0] + " Skin"); // TODO
                     }
                     else
                     {
                         PlayerPrefs.SetInt("totalGems", PlayerPrefs.GetInt("totalGems") + int.Parse(reward.Replace(" Gems", "")));
                         updateTotalGems();
+                        shopController.updateAmount();
                     }
                 }
             });

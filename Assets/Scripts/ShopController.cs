@@ -18,10 +18,13 @@ public class ShopController : MonoBehaviour
     public GameObject trailSkinScrollViewContent;
     public GameObject gemsScrollViewContent;
     public GameObject buttonPrefab;
+    private Coroutine currentUpdateGemsCoroutine;
     private GameObject selectedBall;
     private GameObject selectedTrail;
     public TextMeshProUGUI amount;
     public GameObject skinConfirmationDialog;
+
+    private char[] splitColon = { ':' };
 
     private Dictionary<int, string[]> ballSkinDictionary = new Dictionary<int, string[]> {
         {0, new string[]{ "0", "#FFFFFF"} },
@@ -52,15 +55,14 @@ public class ShopController : MonoBehaviour
         {7, new string[]{ "100", "#F497AA"} },
         {8, new string[]{ "100", "#DD86B9"} },
         {9, new string[]{ "100", "#9977B4"} },
-        {10, new string[]{ "200", "gem"} },
-        {11, new string[]{ "200", ""} },
+        {10, new string[]{ "200", "gem:#00D272:#009C54"} }, // Price, ParticleName;Color1;Color2
+        {11, new string[]{ "200", "ballGer:#ffffff:#000000"} },
         {12, new string[]{ "200", ""} },
         {13, new string[]{ "200", ""} },
         {14, new string[]{ "200", ""} },
     };
 
     public GameObject[] gemButtons;
-
 
     void Start()
     {
@@ -125,7 +127,8 @@ public class ShopController : MonoBehaviour
             string[] currentElement = trailSkinDictionary.ElementAt(i).Value;
             int currentKey = trailSkinDictionary.ElementAt(i).Key;
             GameObject temp = Instantiate(buttonPrefab);
-            temp.transform.GetChild(0).GetComponent<Image>().sprite = trailSprite;
+            Image previewImage = temp.transform.GetChild(0).GetComponent<Image>();
+            previewImage.sprite = trailSprite;
             temp.transform.GetChild(0).localScale = scale120perc;
             if (PlayerPrefs.GetInt("trailSkin" + currentKey) == 1)
             {
@@ -135,13 +138,12 @@ public class ShopController : MonoBehaviour
             {
                 temp.transform.GetChild(2).GetChild(1).GetComponent<TextMeshProUGUI>().text = currentElement[0];
             }
-
             if (currentElement[1].StartsWith("#"))
             {
                 Color color;
                 if (ColorUtility.TryParseHtmlString(currentElement[1], out color))
                 {
-                    temp.transform.GetChild(0).GetComponent<Image>().color = color;
+                    previewImage.color = color;
                 }
                 else
                 {
@@ -150,7 +152,10 @@ public class ShopController : MonoBehaviour
             }
             else
             {
-                temp.transform.GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(currentElement[1]);
+                previewImage.sprite = Resources.Load<Sprite>(currentElement[1].Split(splitColon)[0]);
+                Color previewColor;
+                ColorUtility.TryParseHtmlString(currentElement[1].Split(splitColon)[1], out previewColor);
+                previewImage.color = previewColor;
             }
             temp.GetComponent<Button>().onClick.AddListener(() => buyOrSelectTrail(temp, currentKey));
             temp.transform.SetParent(trailSkinScrollViewContent.transform, false);
@@ -318,7 +323,9 @@ public class ShopController : MonoBehaviour
 
     private void setTrailColor(string colorOrSkin)
     {
-        ParticleSystem.EmissionModule em = playBall.GetComponent<ParticleSystem>().emission;
+        ParticleSystem ps = playBall.GetComponent<ParticleSystem>();
+        ParticleSystem.EmissionModule em = ps.emission;
+        ParticleSystem.MainModule mm = ps.main;
         if (colorOrSkin.StartsWith("#"))
         {
             Color color;
@@ -333,14 +340,25 @@ public class ShopController : MonoBehaviour
         else
         {
             playBall.GetComponent<TrailRenderer>().enabled = false;
-            playBall.GetComponent<ParticleSystem>().textureSheetAnimation.SetSprite(0, Resources.Load<Sprite>(colorOrSkin));
+            Color color1;
+            Color color2;
+            ColorUtility.TryParseHtmlString(colorOrSkin.Split(splitColon)[1], out color1);
+            ColorUtility.TryParseHtmlString(colorOrSkin.Split(splitColon)[2], out color2);
+            ParticleSystem.MinMaxGradient grad = new ParticleSystem.MinMaxGradient(color1, color2);
+            grad.mode = ParticleSystemGradientMode.TwoColors;
+            mm.startColor = grad;
+            ps.textureSheetAnimation.SetSprite(0, Resources.Load<Sprite>(colorOrSkin));
             em.enabled = true;
         }
     }
 
     public void updateAmount()
     {
-        StartCoroutine(updateShopGemsCoroutine());
+        if (currentUpdateGemsCoroutine != null)
+        {
+            StopCoroutine(currentUpdateGemsCoroutine);
+        }
+        currentUpdateGemsCoroutine = StartCoroutine(updateShopGemsCoroutine());
     }
 
     private IEnumerator updateShopGemsCoroutine()
