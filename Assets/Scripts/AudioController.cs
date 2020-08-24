@@ -10,13 +10,13 @@ public class AudioController : MonoBehaviour
     public AudioClip[] explosions;
     public AudioClip[] bounces;
     public AudioSource backgroundSource;
-    private AudioSource gameOverSource;
     public GameObject audioSourcePrefab;
+    public GameObject audioSources;
     private float musicVolume;
     private float sfxVolume;
     public Slider musicSlider;
     public Slider sfxSlider;
-
+    private GameObject temp;
 
     // Start is called before the first frame update
     void Start()
@@ -24,10 +24,10 @@ public class AudioController : MonoBehaviour
 
         for (int i = 0; i < 40; i++)
         {
-            audioSourcePool.Enqueue(Instantiate(audioSourcePrefab));
+            temp = Instantiate(audioSourcePrefab);
+            temp.transform.SetParent(audioSources.transform);
+            audioSourcePool.Enqueue(temp);
         }
-
-        gameOverSource = GetComponent<AudioSource>();
         if (!PlayerPrefs.HasKey("musicVolume"))
         {
             PlayerPrefs.SetFloat("musicVolume", 0.2f);

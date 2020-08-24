@@ -6,6 +6,7 @@ public class TouchController : MonoBehaviour
 {
     public Camera mainCamera;
     public GameObject wall;
+    public GameObject walls;
     private GameObject tempWall;
     private Vector2 topPos = new Vector2(0f, 10f);
     private TimeController timeController;
@@ -13,7 +14,7 @@ public class TouchController : MonoBehaviour
     private Touch touch;
     private bool spawned;
     private LineRenderer lr;
-
+    private GameObject temp;
 
     private Queue<GameObject> wallPool = new Queue<GameObject>();
 
@@ -21,10 +22,12 @@ public class TouchController : MonoBehaviour
     {
         timeController = mainCamera.GetComponent<TimeController>();
 
-        for (int i = 0; i < 15; i++)
+        for (int i = 0; i < 10; i++)
         {
-            wallPool.Enqueue(Instantiate(wall));
-            wallPool.ElementAt(i).SetActive(false);
+            temp = Instantiate(wall);
+            temp.transform.SetParent(walls.transform);
+            temp.SetActive(false);
+            wallPool.Enqueue(temp);
         }
     }
 

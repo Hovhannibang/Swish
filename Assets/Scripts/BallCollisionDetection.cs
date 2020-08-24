@@ -82,7 +82,15 @@ public class BallCollisionDetection : MonoBehaviour
                 uiController.activateAchievementInfo(5);
             }
             ballController.getAdController().ShowInterstitialAd();
-            uiController.setGameOverPanelComment(int.Parse(score.text));
+            if (collision.gameObject.tag == "ObstacleWallBack")
+            {
+                uiController.setGameOverPanelComment(int.Parse(score.text), true);
+            }
+            else
+            {
+                uiController.setGameOverPanelComment(int.Parse(score.text), false);
+            }
+
             gameOverPanel.SetActive(true);
             ballController.getPauseButton().gameObject.SetActive(false);
             timeController.setGameOver(true);

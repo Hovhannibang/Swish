@@ -14,6 +14,8 @@ public class FollowBall : MonoBehaviour
     private Vector2 screenBounds;
     private Vector3 tempPos;
     public GameObject obstacle;
+    public GameObject obstacles;
+    private GameObject temp;
     private TimeController timeController;
     public TouchController touchController;
     private float topYpos = 2.828428f;
@@ -27,10 +29,12 @@ public class FollowBall : MonoBehaviour
         previousSpawnX = screenBounds.x - 3f;
         timeController = GetComponent<TimeController>();
 
-        for (int i = 0; i < 20; i++)
+        for (int i = 0; i < 10; i++)
         {
-            obstaclePool.Enqueue(Instantiate(obstacle));
-            obstaclePool.ElementAt(i).SetActive(false);
+            temp = Instantiate(obstacle);
+            temp.transform.SetParent(obstacles.transform);
+            temp.SetActive(false);
+            obstaclePool.Enqueue(temp);
         }
     }
 

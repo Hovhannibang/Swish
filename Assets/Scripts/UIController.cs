@@ -167,7 +167,7 @@ public class UIController : MonoBehaviour
             {
                 ballRb.AddForce(ballRb.velocity.normalized * 0.05f);
             }
-            if (ball.activeSelf && ballRb.velocity.magnitude < 3f && ball.transform.position.x >= -4.9f) // >=-4.9f ??????
+            if (ball.activeSelf && ballRb.velocity.magnitude < 3f && ball.transform.position.x != -5f && ball.transform.position.x > -11f)
             {
                 resetObstacle.SetActive(true);
                 resetObstacle.tag = "destroyBall";
@@ -265,7 +265,7 @@ public class UIController : MonoBehaviour
 
     public void updateTotalGems()
     {
-        if(currentUpdateGemsCoroutine != null)
+        if (currentUpdateGemsCoroutine != null)
         {
             StopCoroutine(currentUpdateGemsCoroutine);
         }
@@ -445,7 +445,7 @@ public class UIController : MonoBehaviour
         this.difficulty = difficulty;
     }
 
-    public void setGameOverPanelComment(int score)
+    public void setGameOverPanelComment(int score, bool wallBack)
     {
         string randomText;
         if (score < 200)
@@ -476,8 +476,9 @@ public class UIController : MonoBehaviour
             }
         }
 
-        if (ball.transform.position.x < -8f)
+        if (wallBack)
         {
+            Debug.Log(wallBack);
             if (!gameOverPanelComment.text.Equals("That's the wrong direction...") && !gameOverPanelComment.text.Equals("Still the wrong direction."))
             {
                 randomText = "That's the wrong direction...";
@@ -488,9 +489,9 @@ public class UIController : MonoBehaviour
             }
         }
 
-        if (randomText.Equals(gameOverPanelComment.text) && score < 9000 && ball.transform.position.x >= -8f)
+        if (randomText.Equals(gameOverPanelComment.text) && score < 9000 && !wallBack)
         {
-            setGameOverPanelComment(score);
+            setGameOverPanelComment(score, false);
         }
         else
         {
