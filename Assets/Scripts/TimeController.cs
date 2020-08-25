@@ -5,7 +5,7 @@ public class TimeController : MonoBehaviour
 {
     public UIController uicontroller;
     public TouchController touchController;
-    private Coroutine currentCoroutineAfter1s;
+    private Coroutine currentCoroutineAfter05s;
     private bool gameStarted;
     private bool gameOver;
     private bool gamePaused;
@@ -32,7 +32,7 @@ public class TimeController : MonoBehaviour
     {
         if (uicontroller.getDifficulty() == 2)
         {
-            currentCoroutineAfter1s = StartCoroutine(endSlowdownAfter1s());
+            currentCoroutineAfter05s = StartCoroutine(endSlowdownAfter0p5s());
         }
         while (Time.timeScale > (slowdownFactor + 0.005f) && slowDown)
         {
@@ -48,15 +48,15 @@ public class TimeController : MonoBehaviour
     {
         slowDown = false;
         StartCoroutine(endSlowdownCoroutine());
-        if (currentCoroutineAfter1s != null)
+        if (currentCoroutineAfter05s != null)
         {
-            StopCoroutine(currentCoroutineAfter1s);
+            StopCoroutine(currentCoroutineAfter05s);
         }
     }
 
-    public IEnumerator endSlowdownAfter1s()
+    public IEnumerator endSlowdownAfter0p5s()
     {
-        yield return new WaitForSecondsRealtime(1f);
+        yield return new WaitForSecondsRealtime(0.5f);
         touchController.setCollided();
         endSlowdown();
         yield return null;

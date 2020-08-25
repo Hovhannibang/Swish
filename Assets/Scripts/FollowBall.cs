@@ -198,6 +198,10 @@ public class FollowBall : MonoBehaviour
                         {
                             probThresh = 0.65f;
                         }
+                        if (uiController.getDifficulty() == 2)
+                        {
+                            probThresh += 0.1f;
+                        }
                         if (spawnProb >= 1f - probThresh)
                         {
                             Debug.Log("Lower: " + yPosToSpawn);

@@ -27,8 +27,7 @@ public class ShopController : MonoBehaviour
 
     private char[] splitColon = { ':' };
     private char[] splitMinus = { '-' };
-    private Vector2 textLeft = new Vector2(40f, 5.4f);
-    private Color colorBlue = new Color(0.02352941f, 0.5607843f, 0.7372549f);
+    private Vector2 textLeft = new Vector2(-77.5f, -4.2f);
 
     private Dictionary<int, string[]> ballSkinDictionary = new Dictionary<int, string[]> {
         {15, new string[]{ "x/5", "ballGer:24-48-72:#000000-#FF2014-#FFD800" } },
@@ -95,7 +94,7 @@ public class ShopController : MonoBehaviour
                 {
                     temp.transform.GetChild(2).GetChild(0).gameObject.SetActive(false);
                     textMesh.gameObject.transform.localPosition = textLeft;
-                    textMesh.color = colorBlue;
+                    textMesh.color = Color.white;
                     textMesh.text = currentElement[0];
                     temp.transform.GetChild(4).gameObject.SetActive(true);
                     temp.transform.GetChild(4).GetComponent<TextMeshProUGUI>().text = "WATCH ADS";
@@ -104,8 +103,7 @@ public class ShopController : MonoBehaviour
                 {
                     temp.transform.GetChild(2).GetChild(0).gameObject.SetActive(false);
                     temp.transform.GetChild(2).GetChild(1).gameObject.SetActive(false);
-
-                    textMesh.text = "ACHIEVEMENT";
+                    textMesh.text = "ACHIEVE";
                     temp.transform.GetChild(4).gameObject.SetActive(true);
                     temp.transform.GetChild(4).GetComponent<TextMeshProUGUI>().text = currentElement[0].Replace("#", "");
                 }
@@ -153,7 +151,7 @@ public class ShopController : MonoBehaviour
                 {
                     temp.transform.GetChild(2).GetChild(0).gameObject.SetActive(false);
                     textMesh.gameObject.transform.localPosition = textLeft;
-                    textMesh.color = colorBlue;
+                    textMesh.color = Color.white;
                     textMesh.text = currentElement[0];
                     temp.transform.GetChild(4).GetComponent<TextMeshProUGUI>().text = "WATCH ADS";
                 }
@@ -161,7 +159,7 @@ public class ShopController : MonoBehaviour
                 {
                     temp.transform.GetChild(2).GetChild(0).gameObject.SetActive(false);
                     temp.transform.GetChild(2).GetChild(1).gameObject.SetActive(false);
-                    textMesh.text = "ACHIEVEMENT";
+                    textMesh.text = "ACHIEVE";
                     temp.transform.GetChild(4).gameObject.SetActive(true);
                     temp.transform.GetChild(4).GetComponent<TextMeshProUGUI>().text = currentElement[0].Replace("#", "");
                 }
