@@ -33,6 +33,7 @@ public class UIController : MonoBehaviour
         {9, "Reverse-Touch the back wall.-25"},
         {10, "???-???-skin*???"},
         {11, "Zero velocity-Stop the ball.-100"},
+        {12, "Adblocker-Remove ads.-skin*Adblock"},
     };
 
     private Vector2[,] ballPreviewLinePositions = new Vector2[5, 4]
@@ -108,8 +109,11 @@ public class UIController : MonoBehaviour
     public GameObject achievementScrollViewContent;
     public GameObject backToHomeAchievementInfo;
     public GameObject moreAchievementInfo;
+    public GameObject moreAdsRemovedAchievementInfo;
     public GameObject achievementsAchievementInfo;
-    public GameObject highScoreSign;
+    public GameObject highScoreSignE;
+    public GameObject highScoreSignN;
+    public GameObject highScoreSignX;
     public GameObject[] ballPreviewLines;
     public AnimationClip[] ballPreviewAnimations;
 
@@ -128,15 +132,6 @@ public class UIController : MonoBehaviour
         ballTransform = ball.transform;
         ballRb = ball.GetComponent<Rigidbody2D>();
 
-        if (!PlayerPrefs.HasKey("totalGems"))
-        {
-            PlayerPrefs.SetInt("totalGems", 0);
-        }
-        if (!PlayerPrefs.HasKey("highScore"))
-        {
-            PlayerPrefs.SetInt("highScore", 0);
-            PlayerPrefs.SetFloat("highScorePosX", 0f);
-        }
         if (PlayerPrefs.GetInt("highScore") >= 1200)
         {
             extremeButton.interactable = true;
@@ -146,7 +141,19 @@ public class UIController : MonoBehaviour
             extremeButtonIngameInfo.gameObject.SetActive(true);
             extremeButtonIngameInfoLocked.gameObject.SetActive(false);
         }
-        highScoreSign.transform.position = new Vector2(PlayerPrefs.GetFloat("highScorePosX"), -3.3f);
+        switch (difficulty)
+        {
+            case 0:
+                highScoreSignE.transform.position = new Vector2(PlayerPrefs.GetFloat("highScoreEPosX"), -3.3f);
+                break;
+            case 1:
+                highScoreSignN.transform.position = new Vector2(PlayerPrefs.GetFloat("highScoreNPosX"), -3.3f);
+                break;
+            case 2:
+                highScoreSignX.transform.position = new Vector2(PlayerPrefs.GetFloat("highScoreXPosX"), -3.3f);
+                break;
+        }
+
         intitializeAchievements();
         setRandomBallPreview();
         highScore.text = PlayerPrefs.GetInt("highScore").ToString();
@@ -261,6 +268,9 @@ public class UIController : MonoBehaviour
         titlePanelAnimator.SetBool("fadeIn", true);
         ballPreviewAnimator.SetBool("fadeIn", true);
         startSelectPanelAnimator.SetBool("fadeIn", true);
+        highScoreSignE.SetActive(false);
+        highScoreSignN.SetActive(false);
+        highScoreSignX.SetActive(false);
     }
 
     public void updateTotalGems()
@@ -390,7 +400,10 @@ public class UIController : MonoBehaviour
         deactivateWallsAndObstacles();
         wallBack.SetActive(true);
         yield return new WaitForSeconds(0.25f);
-        ball.GetComponent<TrailRenderer>().enabled = true;
+        if (!ball.GetComponent<ParticleSystem>().emission.enabled)
+        {
+            ball.GetComponent<TrailRenderer>().enabled = true;
+        }
         yield return null;
     }
 
@@ -501,7 +514,7 @@ public class UIController : MonoBehaviour
 
     public void UpdateExtremeLock()
     {
-        if (PlayerPrefs.GetInt("highScore") >= 1200)
+        if (PlayerPrefs.GetInt("highScoreN") >= 1200)
         {
             extremeButton.interactable = true;
             extremeButtonInfo.gameObject.SetActive(true);
@@ -548,20 +561,13 @@ public class UIController : MonoBehaviour
         if (PlayerPrefs.GetInt("ach7") == 0)
         {
             PlayerPrefs.SetInt("achtakeable7", 1);
+            PlayerPrefs.SetInt("trailSkin11", 1);
             activateAchievementInfo(7);
         }
     }
 
     private void intitializeAchievements()
     {
-        if (!PlayerPrefs.HasKey("ach0"))
-        {
-            for (int i = 0; i < achievementDictionary.Count; i++)
-            {
-                PlayerPrefs.SetInt("ach" + i, 0);
-                PlayerPrefs.SetInt("achtakeable" + i, 0);
-            }
-        }
         for (int i = 0; i < achievementDictionary.Count; i++)
         {
             if (PlayerPrefs.GetInt("achtakeable" + i) == 1)
@@ -616,7 +622,7 @@ public class UIController : MonoBehaviour
                     achtransform.GetChild(2).GetComponent<TextMeshProUGUI>().color = gray;
                     if (reward.EndsWith("Skin") || reward.EndsWith("Trail"))
                     {
-                        Debug.Log("unlocked " + reward.Split(splitMinus)[0] + " Skin"); // TODO
+                        shopController.updateShopButtons();
                     }
                     else
                     {
@@ -637,7 +643,8 @@ public class UIController : MonoBehaviour
     public void activateAchievementInfo(int achnr)
     {
         backToHomeAchievementInfo.SetActive(true);
-        moreAchievementInfo.SetActive(true); ;
+        moreAchievementInfo.SetActive(true);
+        moreAdsRemovedAchievementInfo.SetActive(true);
         achievementsAchievementInfo.SetActive(true);
         achievementScrollViewContent.transform.GetChild(achnr).transform.GetChild(3).gameObject.SetActive(true);
         achievementScrollViewContent.transform.GetChild(achnr).transform.GetChild(4).gameObject.SetActive(true);
@@ -648,6 +655,7 @@ public class UIController : MonoBehaviour
         if (PlayerPrefs.GetInt("ach8") == 0)
         {
             PlayerPrefs.SetInt("achtakeable8", 1);
+            PlayerPrefs.SetInt("trailSkin10", 1);
             activateAchievementInfo(8);
         }
     }
@@ -668,20 +676,57 @@ public class UIController : MonoBehaviour
 
     public void activateHighScoreSign()
     {
-        if (PlayerPrefs.GetInt("highScorePosX") > screenBounds.x + 1f)
+        switch (difficulty)
         {
-            highScoreSign.SetActive(true);
+            case 0:
+                if (PlayerPrefs.GetInt("highScoreE") > 0)
+                {
+                    highScoreSignE.SetActive(true);
+                }
+                highScoreSignN.SetActive(false);
+                highScoreSignX.SetActive(false);
+                break;
+            case 1:
+                if (PlayerPrefs.GetInt("highScoreN") > 0)
+                {
+                    highScoreSignN.SetActive(true);
+                }
+                highScoreSignX.SetActive(false);
+                highScoreSignE.SetActive(false);
+                break;
+            case 2:
+                if (PlayerPrefs.GetInt("highScoreX") > 0)
+                {
+                    highScoreSignX.SetActive(true);
+                }
+                highScoreSignE.SetActive(false);
+                highScoreSignN.SetActive(false);
+                break;
         }
     }
 
     public void setHighscoreSign(float ballXpos)
     {
-        highScore.text = score.text;
-        PlayerPrefs.SetFloat("highScorePosX", ballXpos);
-        highScoreSign.transform.position = new Vector2(ballXpos, -3.3f);
-        if (ballXpos > screenBounds.x + 1f)
+        switch (difficulty)
         {
-            highScoreSign.SetActive(true);
+            case 0:
+                PlayerPrefs.SetFloat("highScoreEPosX", ballXpos);
+                highScore.text = score.text;
+                highScoreSignE.transform.position = new Vector2(ballXpos, -3.3f);
+                highScoreSignE.SetActive(true);
+                break;
+            case 1:
+                PlayerPrefs.SetFloat("highScoreNPosX", ballXpos);
+                highScore.text = score.text;
+                highScoreSignN.transform.position = new Vector2(ballXpos, -3.3f);
+                highScoreSignN.SetActive(true);
+                break;
+            case 2:
+                PlayerPrefs.SetFloat("highScoreXPosX", ballXpos);
+                highScore.text = score.text;
+                highScoreSignX.transform.position = new Vector2(ballXpos, -3.3f);
+                highScoreSignX.SetActive(true);
+                break;
         }
     }
 

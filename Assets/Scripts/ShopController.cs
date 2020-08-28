@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using TMPro;
 using UnityEngine;
@@ -12,6 +13,8 @@ public class ShopController : MonoBehaviour
     public GameObject uiBall;
     public GameObject playBall;
     public UIController uiController;
+    public NotificationController notificationController;
+    public AdController adController;
     public ScrollRect ballScrollView;
     public ScrollRect trailScrollView;
     public ScrollRect gemsScrollView;
@@ -22,15 +25,29 @@ public class ShopController : MonoBehaviour
     private Coroutine currentUpdateGemsCoroutine;
     private GameObject selectedBall;
     private GameObject selectedTrail;
+    private Button dailyButton;
     public TextMeshProUGUI amount;
     public GameObject skinConfirmationDialog;
+    public GameObject customizeButtonAchievementInfo;
+    public GameObject gemsButtonAchievementInfo;
+    public GameObject moreButton;
+    public GameObject noAdsButton;
+    public GameObject moreButtonAdsRemoved;
 
     private char[] splitColon = { ':' };
     private char[] splitMinus = { '-' };
     private Vector2 textLeft = new Vector2(-77.5f, -4.2f);
 
-    private Dictionary<int, string[]> ballSkinDictionary = new Dictionary<int, string[]> {
-        {15, new string[]{ "x/5", "ballGer:24-48-72:#000000-#FF2014-#FFD800" } },
+    private Dictionary<int, string[]> ballSkinDictionary = new Dictionary<int, string[]> { // TODO SKIN FRAGMENT COLORS
+        {15, new string[]{ "x/5", "soccerball:24-48-72:#000000-#FF2014-#FFD800" } },
+        {16, new string[]{ "x/5", "volleyball:24-48-72:#000000-#FF2014-#FFD800" } },
+        {17, new string[]{ "x/5", "beachball:24-48-72:#000000-#FF2014-#FFD800" } },
+        {18, new string[]{ "x/5", "baseball:24-48-72:#000000-#FF2014-#FFD800" } },
+        {19, new string[]{ "x/5", "basketball:24-48-72:#000000-#FF2014-#FFD800" } },
+        {23, new string[]{ "x/5", "bowlingball:24-48-72:#000000-#FF2014-#FFD800" } },
+        {24, new string[]{ "x/5", "tennisball:24-48-72:#000000-#FF2014-#FFD800" } },
+        {26, new string[]{ "#'? ? ?'", "questionmark:24-48-72:#000000-#FF2014-#FFD800" } },
+        {20, new string[]{ "#'ADBLOCKER'", "adblocker:24-48-72:#000000-#FF2014-#FFD800" } },
         {0, new string[]{ "0", "#FFFFFF"} },
         {1, new string[]{ "100", "#71ABDD"} },
         {2, new string[]{ "100", "#6BCADE"} },
@@ -39,9 +56,33 @@ public class ShopController : MonoBehaviour
         {5, new string[]{ "100", "#FFF68F"} },
         {6, new string[]{ "100", "#FDCD79"} },
         {7, new string[]{ "100", "#F497AA"} },
-        {8, new string[]{ "100", "#DD86B9"} },
-        {9, new string[]{ "100", "#9977B4"} },
+        {8, new string[]{ "200", "ballGer:24-48-72:#1B1B1B-#FF3333-#FFDB19" } },
+        {9, new string[]{ "200", "ballGer:24-48-72:#000000-#FF2014-#FFD800" } },
         {10, new string[]{ "200", "ballGer:24-48-72:#000000-#FF2014-#FFD800" } },
+        {27, new string[]{ "200", "ballGer:24-48-72:#000000-#FF2014-#FFD800" } },
+        {28, new string[]{ "200", "ballGer:24-48-72:#000000-#FF2014-#FFD800" } },
+        {29, new string[]{ "200", "ballGer:24-48-72:#000000-#FF2014-#FFD800" } },
+        {30, new string[]{ "200", "ballGer:24-48-72:#000000-#FF2014-#FFD800" } },
+        {31, new string[]{ "200", "ballGer:24-48-72:#000000-#FF2014-#FFD800" } },
+        {32, new string[]{ "200", "ballGer:24-48-72:#000000-#FF2014-#FFD800" } },
+        {33, new string[]{ "200", "ballGer:24-48-72:#000000-#FF2014-#FFD800" } },
+        {34, new string[]{ "200", "ballGer:24-48-72:#000000-#FF2014-#FFD800" } },
+        {35, new string[]{ "200", "ballGer:24-48-72:#000000-#FF2014-#FFD800" } },
+        {36, new string[]{ "200", "ballGer:24-48-72:#000000-#FF2014-#FFD800" } },
+        {37, new string[]{ "200", "ballGer:24-48-72:#000000-#FF2014-#FFD800" } },
+        {38, new string[]{ "200", "ballGer:24-48-72:#000000-#FF2014-#FFD800" } },
+        {39, new string[]{ "200", "ballGer:24-48-72:#000000-#FF2014-#FFD800" } },
+        {40, new string[]{ "200", "ballGer:24-48-72:#000000-#FF2014-#FFD800" } },
+        {41, new string[]{ "200", "ballGer:24-48-72:#000000-#FF2014-#FFD800" } },
+        {42, new string[]{ "200", "ballGer:24-48-72:#000000-#FF2014-#FFD800" } },
+        {43, new string[]{ "200", "ballGer:24-48-72:#000000-#FF2014-#FFD800" } },
+        {44, new string[]{ "200", "ballGer:24-48-72:#000000-#FF2014-#FFD800" } },
+        {45, new string[]{ "200", "ballGer:24-48-72:#000000-#FF2014-#FFD800" } },
+        {46, new string[]{ "200", "ballGer:24-48-72:#000000-#FF2014-#FFD800" } },
+        {47, new string[]{ "200", "ballGer:24-48-72:#000000-#FF2014-#FFD800" } },
+        {48, new string[]{ "200", "ballGer:24-48-72:#000000-#FF2014-#FFD800" } },
+        {49, new string[]{ "200", "ballGer:24-48-72:#000000-#FF2014-#FFD800" } },
+        {50, new string[]{ "200", "ballGer:24-48-72:#000000-#FF2014-#FFD800" } },
     };
 
     private Dictionary<int, string[]> trailSkinDictionary = new Dictionary<int, string[]> {
@@ -53,9 +94,8 @@ public class ShopController : MonoBehaviour
         {5, new string[]{ "100", "#FFF68F"} },
         {6, new string[]{ "100", "#FDCD79"} },
         {7, new string[]{ "100", "#F497AA"} },
-        {8, new string[]{ "100", "#DD86B9"} },
-        {9, new string[]{ "100", "#9977B4"} },
-        {10, new string[]{ "#'DOUBLE DOWN'", "gem:#00D272:#009C54" } },
+        {8, new string[]{ "#'DOUBLE DOWN'", "gem:#00D272:#009C54" } },
+        {9, new string[]{ "#'STARS'", "star:#FFEF68:#D8BB00" } },
     };
 
     public GameObject[] gemButtons;
@@ -63,17 +103,24 @@ public class ShopController : MonoBehaviour
     void Start()
     {
         amount.text = PlayerPrefs.GetInt("totalGems").ToString();
-        if (!PlayerPrefs.HasKey("ballSkin0"))
+        if (!PlayerPrefs.HasKey("lastTimeDailyTaken"))
         {
-            PlayerPrefs.SetInt("ballSkin0", 1);
-            PlayerPrefs.SetInt("trailSkin0", 1);
-            PlayerPrefs.SetInt("lastBallSkin", 0);
-            PlayerPrefs.SetInt("lastTrailSkin", 0);
+            PlayerPrefs.SetString("lastTimeDailyTaken", "01010001010101");
         }
+        PlayerPrefs.SetInt("ballSkin0", 1);
+        PlayerPrefs.SetInt("trailSkin0", 1);
         initiateBallShop();
         initiateTrailShop();
         initiateGemsShop();
         setLastSelectedSkins();
+        StartCoroutine(checkIfDailyAvailable());
+
+        if (PlayerPrefs.GetInt("adsRemoved") == 1)
+        {
+            moreButton.SetActive(false);
+            noAdsButton.SetActive(false);
+            moreButtonAdsRemoved.SetActive(true);
+        }
     }
 
     private void initiateBallShop()
@@ -90,20 +137,24 @@ public class ShopController : MonoBehaviour
             else
             {
                 TextMeshProUGUI textMesh = temp.transform.GetChild(2).GetChild(1).GetComponent<TextMeshProUGUI>();
-                if (currentElement[0].StartsWith("x"))
+                if (currentElement[0].EndsWith("/5"))
                 {
                     temp.transform.GetChild(2).GetChild(0).gameObject.SetActive(false);
                     textMesh.gameObject.transform.localPosition = textLeft;
                     textMesh.color = Color.white;
-                    textMesh.text = currentElement[0];
+                    textMesh.text = PlayerPrefs.GetInt("adBall" + currentKey).ToString() + "/5";
                     temp.transform.GetChild(4).gameObject.SetActive(true);
                     temp.transform.GetChild(4).GetComponent<TextMeshProUGUI>().text = "WATCH ADS";
                 }
                 else if (currentElement[0].StartsWith("#"))
                 {
                     temp.transform.GetChild(2).GetChild(0).gameObject.SetActive(false);
-                    temp.transform.GetChild(2).GetChild(1).gameObject.SetActive(false);
+                    temp.transform.GetChild(2).GetChild(1).gameObject.SetActive(true);
                     textMesh.text = "ACHIEVE";
+                    textMesh.gameObject.transform.localPosition = textLeft;
+                    textMesh.fontSize = 22;
+                    textMesh.fontStyle = FontStyles.Bold;
+                    textMesh.color = Color.white;
                     temp.transform.GetChild(4).gameObject.SetActive(true);
                     temp.transform.GetChild(4).GetComponent<TextMeshProUGUI>().text = currentElement[0].Replace("#", "");
                 }
@@ -147,19 +198,24 @@ public class ShopController : MonoBehaviour
             else
             {
                 TextMeshProUGUI textMesh = temp.transform.GetChild(2).GetChild(1).GetComponent<TextMeshProUGUI>();
-                if (currentElement[0].StartsWith("x"))
+                if (currentElement[0].EndsWith("/5"))
                 {
                     temp.transform.GetChild(2).GetChild(0).gameObject.SetActive(false);
                     textMesh.gameObject.transform.localPosition = textLeft;
                     textMesh.color = Color.white;
-                    textMesh.text = currentElement[0];
+                    textMesh.text = PlayerPrefs.GetInt("adTrail" + currentKey).ToString() + "/5";
+                    temp.transform.GetChild(4).gameObject.SetActive(true);
                     temp.transform.GetChild(4).GetComponent<TextMeshProUGUI>().text = "WATCH ADS";
                 }
                 else if (currentElement[0].StartsWith("#"))
                 {
                     temp.transform.GetChild(2).GetChild(0).gameObject.SetActive(false);
-                    temp.transform.GetChild(2).GetChild(1).gameObject.SetActive(false);
+                    temp.transform.GetChild(2).GetChild(1).gameObject.SetActive(true);
                     textMesh.text = "ACHIEVE";
+                    textMesh.gameObject.transform.localPosition = textLeft;
+                    textMesh.fontSize = 22;
+                    textMesh.fontStyle = FontStyles.Bold;
+                    textMesh.color = Color.white;
                     temp.transform.GetChild(4).gameObject.SetActive(true);
                     temp.transform.GetChild(4).GetComponent<TextMeshProUGUI>().text = currentElement[0].Replace("#", "");
                 }
@@ -209,8 +265,34 @@ public class ShopController : MonoBehaviour
         for (int i = 0; i < gemButtons.Length; i++)
         {
             GameObject temp = Instantiate(gemButtons[i]);
+            Button tempButton = temp.GetComponent<Button>();
             int gemAmount = int.Parse(temp.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text.Replace(" Gems", ""));
-            temp.GetComponent<Button>().onClick.AddListener(() => increaseGems(gemAmount));
+            if (i > 1)
+            {
+                tempButton.onClick.AddListener(() => increaseGems(gemAmount));
+            }
+            else if (i == 0)
+            {
+                dailyButton = tempButton;
+                tempButton.onClick.AddListener(() =>
+                {
+                    PlayerPrefs.SetString("lastTimeDailyTaken", DateTime.Now.ToString("ddMMyyyyHHmmss"));
+                    tempButton.interactable = false;
+                    increaseGems(gemAmount);
+                    notificationController.setupDailyNotification();
+                    customizeButtonAchievementInfo.SetActive(false);
+                    gemsButtonAchievementInfo.SetActive(false);
+
+                });
+            }
+            else if (i == 1)
+            {
+                tempButton.onClick.AddListener(() =>
+                {
+                    adController.ShowRewardedGemsVideo();
+                });
+            }
+
             temp.transform.SetParent(gemsScrollViewContent.transform, false);
         }
         gemsScrollView.verticalNormalizedPosition = 1;
@@ -231,12 +313,12 @@ public class ShopController : MonoBehaviour
         string colorOrSkin = values[1];
         if (button.transform.GetChild(2).gameObject.activeSelf)
         {
-            string text = button.transform.GetChild(2).GetChild(1).GetComponent<TextMeshProUGUI>().text;
-            if (text.StartsWith("A"))
+            string text = button.transform.GetChild(2).transform.GetChild(1).GetComponent<TextMeshProUGUI>().text;
+            if (text.EndsWith("/5"))
             {
-
+                adController.ShowRewardedSkinVideo(number, true);
             }
-            else
+            else if (!text.Equals("ACHIEVE"))
             {
                 int price = int.Parse(text);
                 int totalGems = PlayerPrefs.GetInt("totalGems");
@@ -272,7 +354,6 @@ public class ShopController : MonoBehaviour
                 }
                 else
                 {
-                    Debug.Log("Not enough moneten");
                     return;
                 }
             }
@@ -316,18 +397,13 @@ public class ShopController : MonoBehaviour
             uiBall.GetComponent<Image>().color = Color.white;
             playBall.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>(skin);
             playBall.GetComponent<SpriteRenderer>().color = Color.white;
-
-            Debug.Log(colors.Length);
             GameObject[] fragments = playBall.GetComponent<Explodable>().fragments.OrderBy(x => Guid.NewGuid()).ToList().ToArray();
-            Debug.Log(fragments.Length);
-
             int colorAmountStart = 0;
             int colorAmountEnd;
             for (int i = 0; i < colorAmounts.Length; i++)
             {
                 Color color;
                 ColorUtility.TryParseHtmlString(colors[i], out color);
-                Debug.Log("color: " + i + " " + color);
                 Material tempMat = new Material(playBall.GetComponent<SpriteRenderer>().material);
                 tempMat.color = color;
                 colorAmountEnd = int.Parse(colorAmounts[i]);
@@ -347,42 +423,49 @@ public class ShopController : MonoBehaviour
         string colorOrSkin = values[1];
         if (button.transform.GetChild(2).gameObject.activeSelf)
         {
-            int price = int.Parse(button.transform.GetChild(2).GetChild(1).GetComponent<TextMeshProUGUI>().text);
-            int totalGems = PlayerPrefs.GetInt("totalGems");
-            if (totalGems >= price)
+            string text = button.transform.GetChild(2).transform.GetChild(1).GetComponent<TextMeshProUGUI>().text;
+            if (text.EndsWith("/5"))
             {
-                ballScrollView.GetComponent<CanvasGroup>().blocksRaycasts = false;
-                ballScrollView.transform.GetChild(0).GetComponent<CanvasGroup>().alpha = 0.25f;
-                skinConfirmationDialog.transform.GetChild(6).GetComponent<Image>().sprite = button.transform.GetChild(0).GetComponent<Image>().sprite;
-                skinConfirmationDialog.transform.GetChild(6).GetComponent<Image>().color = button.transform.GetChild(0).GetComponent<Image>().color;
-                skinConfirmationDialog.SetActive(true);
-                skinConfirmationDialog.transform.GetChild(skinConfirmationDialog.transform.childCount - 1).GetComponent<Button>().onClick.RemoveAllListeners();
-                skinConfirmationDialog.transform.GetChild(skinConfirmationDialog.transform.childCount - 1).GetComponent<Button>().onClick.AddListener(() =>
-                {
-                    PlayerPrefs.SetInt("trailSkin" + number, 1);
-                    totalGems -= price;
-                    PlayerPrefs.SetInt("totalGems", totalGems);
-                    uiController.updateTotalGems();
-                    updateAmount();
-                    button.transform.GetChild(2).gameObject.SetActive(false);
-                    selectedTrail.transform.GetChild(1).gameObject.SetActive(false);
-                    selectedTrail = button;
-                    selectedTrail.transform.GetChild(1).gameObject.SetActive(true);
-
-                    setTrailColor(colorOrSkin);
-                    PlayerPrefs.SetInt("lastTrailSkin", number);
-
-                    if (PlayerPrefs.GetInt("ach6") == 0)
-                    {
-                        PlayerPrefs.SetInt("achtakeable6", 1);
-                        uiController.activateAchievementInfo(6);
-                    }
-                });
+                adController.ShowRewardedSkinVideo(number, false);
             }
-            else
+            else if (!text.Equals("ACHIEVE"))
             {
-                Debug.Log("Not enough moneten");
-                return;
+                int price = int.Parse(button.transform.GetChild(2).GetChild(1).GetComponent<TextMeshProUGUI>().text);
+                int totalGems = PlayerPrefs.GetInt("totalGems");
+                if (totalGems >= price)
+                {
+                    ballScrollView.GetComponent<CanvasGroup>().blocksRaycasts = false;
+                    ballScrollView.transform.GetChild(0).GetComponent<CanvasGroup>().alpha = 0.25f;
+                    skinConfirmationDialog.transform.GetChild(6).GetComponent<Image>().sprite = button.transform.GetChild(0).GetComponent<Image>().sprite;
+                    skinConfirmationDialog.transform.GetChild(6).GetComponent<Image>().color = button.transform.GetChild(0).GetComponent<Image>().color;
+                    skinConfirmationDialog.SetActive(true);
+                    skinConfirmationDialog.transform.GetChild(skinConfirmationDialog.transform.childCount - 1).GetComponent<Button>().onClick.RemoveAllListeners();
+                    skinConfirmationDialog.transform.GetChild(skinConfirmationDialog.transform.childCount - 1).GetComponent<Button>().onClick.AddListener(() =>
+                    {
+                        PlayerPrefs.SetInt("trailSkin" + number, 1);
+                        totalGems -= price;
+                        PlayerPrefs.SetInt("totalGems", totalGems);
+                        uiController.updateTotalGems();
+                        updateAmount();
+                        button.transform.GetChild(2).gameObject.SetActive(false);
+                        selectedTrail.transform.GetChild(1).gameObject.SetActive(false);
+                        selectedTrail = button;
+                        selectedTrail.transform.GetChild(1).gameObject.SetActive(true);
+
+                        setTrailColor(colorOrSkin);
+                        PlayerPrefs.SetInt("lastTrailSkin", number);
+
+                        if (PlayerPrefs.GetInt("ach6") == 0)
+                        {
+                            PlayerPrefs.SetInt("achtakeable6", 1);
+                            uiController.activateAchievementInfo(6);
+                        }
+                    });
+                }
+                else
+                {
+                    return;
+                }
             }
         }
         else
@@ -426,6 +509,38 @@ public class ShopController : MonoBehaviour
             mm.startColor = grad;
             ps.textureSheetAnimation.SetSprite(0, Resources.Load<Sprite>(split[0]));
             em.enabled = true;
+        }
+    }
+
+    public void updateShopButtons()
+    {
+        for (int i = 0; i < ballSkinScrollViewContent.transform.childCount; i++)
+        {
+            int currentKey = ballSkinDictionary.ElementAt(i).Key;
+            Transform buttonTransform = ballSkinScrollViewContent.transform.GetChild(i).transform;
+            if (buttonTransform.GetChild(2).transform.GetChild(1).GetComponent<TextMeshProUGUI>().text.EndsWith("/5"))
+            {
+                buttonTransform.GetChild(2).transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = PlayerPrefs.GetInt("adBall" + currentKey).ToString() + "/5";
+            }
+            if (PlayerPrefs.GetInt("ballSkin" + currentKey) == 1)
+            {
+                buttonTransform.GetChild(2).gameObject.SetActive(false);
+                buttonTransform.GetChild(4).gameObject.SetActive(false);
+            }
+        }
+        for (int i = 0; i < trailSkinScrollViewContent.transform.childCount; i++)
+        {
+            int currentKey = trailSkinDictionary.ElementAt(i).Key;
+            Transform buttonTransform = trailSkinScrollViewContent.transform.GetChild(i).transform;
+            if (buttonTransform.GetChild(2).transform.GetChild(1).GetComponent<TextMeshProUGUI>().text.EndsWith("/5"))
+            {
+                buttonTransform.GetChild(2).transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = PlayerPrefs.GetInt("adTrail" + currentKey).ToString() + "/5";
+            }
+            if (PlayerPrefs.GetInt("trailSkin" + currentKey) == 1)
+            {
+                buttonTransform.GetChild(2).gameObject.SetActive(false);
+                buttonTransform.GetChild(4).gameObject.SetActive(false);
+            }
         }
     }
 
@@ -506,5 +621,40 @@ public class ShopController : MonoBehaviour
         string[] valuesTrail;
         trailSkinDictionary.TryGetValue(lastTrailSkin, out valuesTrail);
         setTrailColor(valuesTrail[1]);
+    }
+
+    private IEnumerator checkIfDailyAvailable()
+    {
+        while (true)
+        {
+            if (DateTime.Compare(DateTime.ParseExact(PlayerPrefs.GetString("lastTimeDailyTaken"), "ddMMyyyyHHmmss", CultureInfo.InvariantCulture).AddDays(1), DateTime.Now) <= 0)
+            {
+                dailyButton.interactable = true;
+                dailyButton.transform.GetChild(3).gameObject.SetActive(true);
+                customizeButtonAchievementInfo.SetActive(true);
+                gemsButtonAchievementInfo.SetActive(true);
+            }
+            else
+            {
+                dailyButton.interactable = false;
+            }
+            yield return new WaitForSecondsRealtime(1);
+        }
+    }
+
+    public void removeAds()
+    {
+        //TODO REMOVE ADS IAP
+        PlayerPrefs.SetInt("adsRemoved", 1);
+        adController.removeBanner();
+        moreButton.SetActive(false);
+        noAdsButton.SetActive(false);
+        moreButtonAdsRemoved.SetActive(true);
+        if (PlayerPrefs.GetInt("ach12") == 0)
+        {
+            PlayerPrefs.SetInt("achtakeable12", 1);
+            PlayerPrefs.SetInt("ballSkin20", 1);
+            uiController.activateAchievementInfo(12);
+        }
     }
 }

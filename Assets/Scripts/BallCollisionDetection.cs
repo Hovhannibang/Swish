@@ -109,10 +109,30 @@ public class BallCollisionDetection : MonoBehaviour
                 fragRb.AddTorque(Random.Range(-2f, 2f) * 2f);
             }
             ball.SetActive(false);
-            PlayerPrefs.SetInt("highScore", int.Parse(score.text));
-            if (PlayerPrefs.GetInt("highScore") > uiController.getHighScore())
+            int currentScore = int.Parse(score.text);
+            switch (uiController.getDifficulty())
             {
-                uiController.setHighscoreSign(ball.transform.position.x);
+                case 0:
+                    if (PlayerPrefs.GetInt("highScoreE") < currentScore)
+                    {
+                        PlayerPrefs.SetInt("highScoreE", currentScore);
+                        uiController.setHighscoreSign(ball.transform.position.x);
+                    }
+                    break;
+                case 1:
+                    if (PlayerPrefs.GetInt("highScoreN") < currentScore)
+                    {
+                        PlayerPrefs.SetInt("highScoreN", currentScore);
+                        uiController.setHighscoreSign(ball.transform.position.x);
+                    }
+                    break;
+                case 2:
+                    if (PlayerPrefs.GetInt("highScoreX") < currentScore)
+                    {
+                        PlayerPrefs.SetInt("highScoreX", currentScore);
+                        uiController.setHighscoreSign(ball.transform.position.x);
+                    }
+                    break;
             }
             calculateAndSetGems();
             shopController.updateAmount();

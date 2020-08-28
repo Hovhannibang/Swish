@@ -6,10 +6,12 @@ using UnityEngine.UI;
 
 public class AdController : MonoBehaviour, IUnityAdsListener
 {
-    private string gameId = "3748085";
+    private string gameId = "3754351";
     private bool testMode = true;
     private string banner = "bannerAd";
     private string rewardedVideo = "rewardedVideo";
+    private string rewardedVideoGems = "rewardedVideoGems";
+    private string rewardedVideoSkin = "rewardedVideoSkin";
     public TextMeshProUGUI gemsText;
     public Button doubleButton;
     public UIController uiController;
@@ -17,6 +19,8 @@ public class AdController : MonoBehaviour, IUnityAdsListener
     private int counter;
     public ShopController shopController;
     private int roundsSinceLastAd = 0;
+    private int skinNumber;
+    private bool ballSkin;
 
 
     // Start is called before the first frame update
@@ -29,8 +33,13 @@ public class AdController : MonoBehaviour, IUnityAdsListener
         }
         Advertisement.AddListener(this);
         Advertisement.Initialize(gameId, testMode);
-        StartCoroutine(ShowBannerWhenInitialized());
+        if (PlayerPrefs.GetInt("adsRemoved") == 0)
+        {
+            StartCoroutine(ShowBannerWhenInitialized());
+        }
         StartCoroutine(countTimeForAdCoroutine());
+        StartCoroutine(LoadRewardedGemsBanner());
+        StartCoroutine(LoadRewardedSkinBanner());
     }
 
     private IEnumerator countTimeForAdCoroutine()
@@ -55,9 +64,17 @@ public class AdController : MonoBehaviour, IUnityAdsListener
         Advertisement.Banner.Show(banner);
     }
 
+    public void removeBanner()
+    {
+        Advertisement.Banner.Hide();
+    }
+
     public void ShowInterstitialAd()
     {
-        StartCoroutine(ShowInterstitialAdCoroutine());
+        if (PlayerPrefs.GetInt("adsRemoved") == 0)
+        {
+            StartCoroutine(ShowInterstitialAdCoroutine());
+        }
     }
     private IEnumerator ShowInterstitialAdCoroutine()
     {
@@ -75,6 +92,18 @@ public class AdController : MonoBehaviour, IUnityAdsListener
         Advertisement.Show(rewardedVideo);
     }
 
+    public void ShowRewardedGemsVideo()
+    {
+        Advertisement.Show(rewardedVideoGems);
+    }
+
+    public void ShowRewardedSkinVideo(int skinNumber, bool ballSkin)
+    {
+        this.skinNumber = skinNumber;
+        this.ballSkin = ballSkin;
+        Advertisement.Show(rewardedVideoSkin);
+    }
+
     public IEnumerator LoadRewardedBanner()
     {
         while (!Advertisement.IsReady(rewardedVideo))
@@ -82,6 +111,21 @@ public class AdController : MonoBehaviour, IUnityAdsListener
             yield return new WaitForSeconds(0.5f);
         }
         doubleButton.interactable = true;
+    }
+    public IEnumerator LoadRewardedGemsBanner()
+    {
+        while (!Advertisement.IsReady(rewardedVideoGems))
+        {
+            yield return new WaitForSeconds(0.5f);
+        }
+    }
+
+    public IEnumerator LoadRewardedSkinBanner()
+    {
+        while (!Advertisement.IsReady(rewardedVideoSkin))
+        {
+            yield return new WaitForSeconds(0.5f);
+        }
     }
 
     public void OnUnityAdsReady(string placementId)
@@ -94,13 +138,50 @@ public class AdController : MonoBehaviour, IUnityAdsListener
 
     public void OnUnityAdsDidFinish(string placementId, ShowResult showResult)
     {
-        if (showResult == ShowResult.Finished && placementId == rewardedVideo)
+        if (showResult == ShowResult.Finished)
         {
-            uiController.unlockDoubleDownAchievement();
-            doubleButton.interactable = false;
-            doubleTaken = true;
-            StartCoroutine(doubleGems());
+            if (placementId == rewardedVideo)
+            {
+                uiController.unlockDoubleDownAchievement();
+                doubleButton.interactable = false;
+                doubleTaken = true;
+                StartCoroutine(doubleGems());
+            }
+            else if (placementId == rewardedVideoGems)
+            {
+                StartCoroutine(increaseGemsBy25());
+            }
+            else if (placementId == rewardedVideoSkin)
+            {
+                if (ballSkin)
+                {
+                    PlayerPrefs.SetInt("adBall" + skinNumber, PlayerPrefs.GetInt("adBall" + skinNumber) + 1);
+                    if (PlayerPrefs.GetInt("adBall" + skinNumber) >= 5)
+                    {
+                        PlayerPrefs.SetInt("ballSkin" + skinNumber, 1);
+                    }
+                }
+                else
+                {
+                    PlayerPrefs.SetInt("adTrail" + skinNumber, PlayerPrefs.GetInt("adTrail" + skinNumber) + 1);
+                    if (PlayerPrefs.GetInt("adTrail" + skinNumber) >= 5)
+                    {
+                        PlayerPrefs.SetInt("trailSkin" + skinNumber, 1);
+                    }
+                }
+                shopController.updateShopButtons();
+            }
         }
+    }
+
+    private IEnumerator increaseGemsBy25()
+    {
+        yield return new WaitForSeconds(0.25f);
+        PlayerPrefs.SetInt("totalGems", PlayerPrefs.GetInt("totalGems") + 25);
+        uiController.updateTotalGems();
+        shopController.updateAmount();
+        StartCoroutine(LoadRewardedGemsBanner());
+        yield return null;
     }
 
     public void setDoubleTaken(bool doubleTaken)
