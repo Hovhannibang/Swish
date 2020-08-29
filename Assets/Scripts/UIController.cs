@@ -26,14 +26,14 @@ public class UIController : MonoBehaviour
         {2, "Extreme-Reach a score of 1200 in normal mode.-120"},
         {3, "Grand Master-Reach a score of 2000 in normal or extreme mode.-200"},
         {4, "Hacker-Reach a score of 5000 in extreme mode.-500"},
-        {5, "Beat Paul-Reach a score of 10000 in extreme mode.-1000"},
+        {5, "Paul-Reach a score of 10000 in extreme mode.-1000"},
         {6, "Customizer-Change your ball or trail skin.-50"},
         {7, "Stars-Rate the game on the app store.-trail*Stars"},
         {8, "Double Down-Double your earned gems in the game over panel.-trail*Gems"},
         {9, "Reverse-Touch the back wall.-25"},
         {10, "???-???-skin*???"},
         {11, "Zero velocity-Stop the ball.-100"},
-        {12, "Adblocker-Remove ads.-skin*Adblock"},
+        {12, "Adblocker-Remove ads. Thank you :)-skin*Adblocker"},
     };
 
     private readonly Vector2[,] ballPreviewLinePositions = new Vector2[5, 4]
@@ -103,6 +103,7 @@ public class UIController : MonoBehaviour
     public TextMeshProUGUI extremeButtonIngameInfoLocked;
     public Button extremeButton;
     public Button extremeButtonIngame;
+    public Button questionMarkButton;
     public BallController ballController;
     public AdController adController;
     public TimeController timeController;
@@ -170,7 +171,10 @@ public class UIController : MonoBehaviour
                 highScoreDiff.text = "EXTREME";
                 break;
         }
-
+        if(PlayerPrefs.GetInt("achtakeable10") == 1 || PlayerPrefs.GetInt("ach10") == 1)
+        {
+            questionMarkButton.interactable = false;
+        }
         intitializeAchievements();
         setRandomBallPreview();
         totalGems.text = PlayerPrefs.GetInt("totalGems").ToString();
@@ -577,7 +581,7 @@ public class UIController : MonoBehaviour
         if (PlayerPrefs.GetInt("ach7") == 0)
         {
             PlayerPrefs.SetInt("achtakeable7", 1);
-            PlayerPrefs.SetInt("trailSkin11", 1);
+            PlayerPrefs.SetInt("trailSkin9", 1);
             activateAchievementInfo(7);
         }
     }
@@ -671,7 +675,7 @@ public class UIController : MonoBehaviour
         if (PlayerPrefs.GetInt("ach8") == 0)
         {
             PlayerPrefs.SetInt("achtakeable8", 1);
-            PlayerPrefs.SetInt("trailSkin10", 1);
+            PlayerPrefs.SetInt("trailSkin8", 1);
             activateAchievementInfo(8);
         }
     }
