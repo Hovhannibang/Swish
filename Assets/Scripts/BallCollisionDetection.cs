@@ -40,11 +40,11 @@ public class BallCollisionDetection : MonoBehaviour
             return;
         }
         isColliding = true;
-        if (collision.gameObject.tag == "destroyBall" || collision.gameObject.tag == "Obstacle" || collision.gameObject.tag == "ObstacleWallBack")
+        if (collision.gameObject.CompareTag("destroyBall") || collision.gameObject.CompareTag("Obstacle") || collision.gameObject.CompareTag("ObstacleWallBack"))
         {
             uiController.gameOverScore.text = score.text;
             int intScore = int.Parse(score.text);
-            if (collision.gameObject.tag.Equals("ObstacleWallBack"))
+            if (collision.gameObject.CompareTag("ObstacleWallBack"))
             {
                 if (PlayerPrefs.GetInt("ach9") == 0)
                 {
@@ -61,7 +61,7 @@ public class BallCollisionDetection : MonoBehaviour
                 PlayerPrefs.SetInt("achtakeable1", 1);
                 uiController.activateAchievementInfo(1);
             }
-            if (intScore >= 1000 && uiController.getDifficulty() > 0 && PlayerPrefs.GetInt("ach2") == 0)
+            if (intScore >= 1200 && uiController.getDifficulty() > 0 && PlayerPrefs.GetInt("ach2") == 0)
             {
                 PlayerPrefs.SetInt("achtakeable2", 1);
                 uiController.activateAchievementInfo(2);
@@ -82,7 +82,7 @@ public class BallCollisionDetection : MonoBehaviour
                 uiController.activateAchievementInfo(5);
             }
             ballController.getAdController().ShowInterstitialAd();
-            if (collision.gameObject.tag == "ObstacleWallBack")
+            if (collision.gameObject.CompareTag("ObstacleWallBack"))
             {
                 uiController.setGameOverPanelComment(int.Parse(score.text), true);
             }
@@ -137,7 +137,7 @@ public class BallCollisionDetection : MonoBehaviour
             calculateAndSetGems();
             shopController.updateAmount();
         }
-        else if (collision.gameObject.tag == "reset")
+        else if (collision.gameObject.CompareTag("reset"))
         {
             fb.setFollowActive(false);
             audioController.playExplosion();
@@ -189,10 +189,5 @@ public class BallCollisionDetection : MonoBehaviour
             shopController.updateAmount();
         }
 
-    }
-
-    public void setBallController(BallController bc)
-    {
-        ballController = bc;
     }
 }

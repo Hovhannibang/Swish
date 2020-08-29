@@ -90,30 +90,4 @@ public class BallController : MonoBehaviour
     {
         return shopController;
     }
-
-    public void regenerateFragments(GameObject ball)
-    {
-        Explodable explodable = ball.GetComponent<Explodable>();
-        explodable.deleteFragments();
-        Debug.Log("Deleted");
-        explodable.fragmentInEditor();
-        Debug.Log("Created");
-        foreach (GameObject frag in explodable.fragments)
-        {
-            frag.tag = "PlayerFragment";
-            MeshRenderer fragMR = frag.GetComponent<MeshRenderer>();
-            fragMR.shadowCastingMode = ShadowCastingMode.Off;
-            fragMR.lightProbeUsage = LightProbeUsage.Off;
-            fragMR.reflectionProbeUsage = ReflectionProbeUsage.Off;
-
-            frag.GetComponent<PolygonCollider2D>().enabled = false;
-
-            Rigidbody2D fragRb = frag.GetComponent<Rigidbody2D>();
-            fragRb.mass = 2;
-            fragRb.gravityScale = 0;
-            fragRb.angularDrag = 0;
-            fragRb.drag = 0;
-        }
-    }
-
 }

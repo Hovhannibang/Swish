@@ -34,11 +34,11 @@ public class ShopController : MonoBehaviour
     public GameObject noAdsButton;
     public GameObject moreButtonAdsRemoved;
 
-    private char[] splitColon = { ':' };
-    private char[] splitMinus = { '-' };
+    private readonly char[] splitColon = { ':' };
+    private readonly char[] splitMinus = { '-' };
     private Vector2 textLeft = new Vector2(-77.5f, -4.2f);
 
-    private Dictionary<int, string[]> ballSkinDictionary = new Dictionary<int, string[]> { // TODO SKIN FRAGMENT COLORS
+    private readonly Dictionary<int, string[]> ballSkinDictionary = new Dictionary<int, string[]> { // TODO SKIN FRAGMENT COLORS
         {15, new string[]{ "x/5", "soccerball:24-48-72:#000000-#FF2014-#FFD800" } },
         {16, new string[]{ "x/5", "volleyball:24-48-72:#000000-#FF2014-#FFD800" } },
         {17, new string[]{ "x/5", "beachball:24-48-72:#000000-#FF2014-#FFD800" } },
@@ -85,7 +85,7 @@ public class ShopController : MonoBehaviour
         {50, new string[]{ "200", "ballGer:24-48-72:#000000-#FF2014-#FFD800" } },
     };
 
-    private Dictionary<int, string[]> trailSkinDictionary = new Dictionary<int, string[]> {
+    private readonly Dictionary<int, string[]> trailSkinDictionary = new Dictionary<int, string[]> {
         {0, new string[]{ "0", "#FFFFFF"} },
         {1, new string[]{ "100", "#71ABDD"} },
         {2, new string[]{ "100", "#6BCADE"} },
@@ -166,8 +166,7 @@ public class ShopController : MonoBehaviour
 
             if (currentElement[1].StartsWith("#"))
             {
-                Color color;
-                ColorUtility.TryParseHtmlString(currentElement[1], out color);
+                ColorUtility.TryParseHtmlString(currentElement[1], out Color color);
                 temp.transform.GetChild(0).GetComponent<Image>().color = color;
             }
             else
@@ -227,21 +226,16 @@ public class ShopController : MonoBehaviour
             if (currentElement[1].StartsWith("#"))
             {
                 temp.transform.GetChild(0).localScale = scale120perc;
-                Color color;
-                ColorUtility.TryParseHtmlString(currentElement[1], out color);
+                ColorUtility.TryParseHtmlString(currentElement[1], out Color color);
                 previewImage.color = color;
             }
             else
             {
-                Color previewColor1;
-                ColorUtility.TryParseHtmlString(currentElement[1].Split(splitColon)[1], out previewColor1);
-                float pc1h, pc1s, pc1v;
-                Color.RGBToHSV(previewColor1, out pc1h, out pc1s, out pc1v);
+                ColorUtility.TryParseHtmlString(currentElement[1].Split(splitColon)[1], out Color previewColor1);
+                Color.RGBToHSV(previewColor1, out float pc1h, out float pc1s, out float pc1v);
 
-                Color previewColor2;
-                ColorUtility.TryParseHtmlString(currentElement[1].Split(splitColon)[2], out previewColor2);
-                float pc2h, pc2s, pc2v;
-                Color.RGBToHSV(previewColor2, out pc2h, out pc2s, out pc2v);
+                ColorUtility.TryParseHtmlString(currentElement[1].Split(splitColon)[2], out Color previewColor2);
+                Color.RGBToHSV(previewColor2, out float pc2h, out float pc2s, out float pc2v);
 
                 Transform particlePreview = temp.transform.GetChild(3);
                 previewImage.gameObject.SetActive(false);
@@ -308,8 +302,7 @@ public class ShopController : MonoBehaviour
 
     private void buyOrSelectBall(GameObject button, int number)
     {
-        string[] values;
-        ballSkinDictionary.TryGetValue(number, out values);
+        ballSkinDictionary.TryGetValue(number, out string[] values);
         string colorOrSkin = values[1];
         if (button.transform.GetChild(2).gameObject.activeSelf)
         {
@@ -372,19 +365,18 @@ public class ShopController : MonoBehaviour
     {
         if (colorOrSkin.StartsWith("#"))
         {
-            Color color;
-            if (ColorUtility.TryParseHtmlString(colorOrSkin, out color))
+            ColorUtility.TryParseHtmlString(colorOrSkin, out Color color);
+            uiBall.GetComponent<Image>().sprite = Resources.Load<Sprite>("standardBall");
+            uiBall.GetComponent<Image>().color = color;
+            playBall.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("standardBall");
+            playBall.GetComponent<SpriteRenderer>().color = color;
+            Material tempMat = new Material(playBall.GetComponent<SpriteRenderer>().material)
             {
-                uiBall.GetComponent<Image>().sprite = Resources.Load<Sprite>("standardBall");
-                uiBall.GetComponent<Image>().color = color;
-                playBall.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("standardBall");
-                playBall.GetComponent<SpriteRenderer>().color = color;
-                Material tempMat = new Material(playBall.GetComponent<SpriteRenderer>().material);
-                tempMat.color = color;
-                foreach (GameObject frag in playBall.GetComponent<Explodable>().fragments)
-                {
-                    frag.GetComponent<MeshRenderer>().material = tempMat;
-                }
+                color = color
+            };
+            foreach (GameObject frag in playBall.GetComponent<Explodable>().fragments)
+            {
+                frag.GetComponent<MeshRenderer>().material = tempMat;
             }
         }
         else
@@ -402,10 +394,11 @@ public class ShopController : MonoBehaviour
             int colorAmountEnd;
             for (int i = 0; i < colorAmounts.Length; i++)
             {
-                Color color;
-                ColorUtility.TryParseHtmlString(colors[i], out color);
-                Material tempMat = new Material(playBall.GetComponent<SpriteRenderer>().material);
-                tempMat.color = color;
+                ColorUtility.TryParseHtmlString(colors[i], out Color color);
+                Material tempMat = new Material(playBall.GetComponent<SpriteRenderer>().material)
+                {
+                    color = color
+                };
                 colorAmountEnd = int.Parse(colorAmounts[i]);
                 for (int j = colorAmountStart; j < colorAmountEnd; j++)
                 {
@@ -418,8 +411,7 @@ public class ShopController : MonoBehaviour
 
     private void buyOrSelectTrail(GameObject button, int number)
     {
-        string[] values;
-        trailSkinDictionary.TryGetValue(number, out values);
+        trailSkinDictionary.TryGetValue(number, out string[] values);
         string colorOrSkin = values[1];
         if (button.transform.GetChild(2).gameObject.activeSelf)
         {
@@ -485,23 +477,18 @@ public class ShopController : MonoBehaviour
         ParticleSystem.MainModule mm = ps.main;
         if (colorOrSkin.StartsWith("#"))
         {
-            Color color;
-            if (ColorUtility.TryParseHtmlString(colorOrSkin, out color))
-            {
-                playBall.GetComponent<TrailRenderer>().startColor = color;
-                playBall.GetComponent<TrailRenderer>().endColor = new Color(color.r, color.g, color.b, 0f);
-                playBall.GetComponent<TrailRenderer>().enabled = true;
-                em.enabled = false;
-            }
+            ColorUtility.TryParseHtmlString(colorOrSkin, out Color color);
+            playBall.GetComponent<TrailRenderer>().startColor = color;
+            playBall.GetComponent<TrailRenderer>().endColor = new Color(color.r, color.g, color.b, 0f);
+            playBall.GetComponent<TrailRenderer>().enabled = true;
+            em.enabled = false;
         }
         else
         {
             playBall.GetComponent<TrailRenderer>().enabled = false;
             string[] split = colorOrSkin.Split(splitColon);
-            Color color1;
-            Color color2;
-            ColorUtility.TryParseHtmlString(split[1], out color1);
-            ColorUtility.TryParseHtmlString(split[2], out color2);
+            ColorUtility.TryParseHtmlString(split[1], out Color color1);
+            ColorUtility.TryParseHtmlString(split[2], out Color color2);
             ParticleSystem.MinMaxGradient grad = new ParticleSystem.MinMaxGradient(color1, color2)
             {
                 mode = ParticleSystemGradientMode.TwoColors
@@ -612,14 +599,12 @@ public class ShopController : MonoBehaviour
 
         selectedBall = ballSkinScrollViewContent.transform.GetChild(Array.IndexOf(ballSkinDictionary.Keys.ToArray(), lastBallSkin)).gameObject;
         selectedBall.transform.GetChild(1).gameObject.SetActive(true);
-        string[] valuesBall;
-        ballSkinDictionary.TryGetValue(lastBallSkin, out valuesBall);
+        ballSkinDictionary.TryGetValue(lastBallSkin, out string[] valuesBall);
         setBallColor(valuesBall[1]);
 
         selectedTrail = trailSkinScrollViewContent.transform.GetChild(Array.IndexOf(trailSkinDictionary.Keys.ToArray(), lastTrailSkin)).gameObject;
         selectedTrail.transform.GetChild(1).gameObject.SetActive(true);
-        string[] valuesTrail;
-        trailSkinDictionary.TryGetValue(lastTrailSkin, out valuesTrail);
+        trailSkinDictionary.TryGetValue(lastTrailSkin, out string[] valuesTrail);
         setTrailColor(valuesTrail[1]);
     }
 

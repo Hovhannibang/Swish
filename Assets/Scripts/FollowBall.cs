@@ -18,9 +18,9 @@ public class FollowBall : MonoBehaviour
     private GameObject temp;
     private TimeController timeController;
     public TouchController touchController;
-    private float topYpos = 2.828428f;
-    private float deltaYpos = 1.131371f;
-    private Queue<GameObject> obstaclePool = new Queue<GameObject>();
+    private readonly float topYpos = 2.828428f;
+    private readonly float deltaYpos = 1.131371f;
+    private readonly Queue<GameObject> obstaclePool = new Queue<GameObject>();
 
     private void Start()
     {
@@ -165,7 +165,6 @@ public class FollowBall : MonoBehaviour
                         }
                         if (spawnProb >= 1f - probThresh)
                         {
-                            Debug.Log("Upper: " + yPosToSpawn);
                             LineRenderer lr = tempObstacle.GetComponent<LineRenderer>();
                             lr.SetPosition(0, tempObstacle.transform.position);
                             lr.SetPosition(1, new Vector2(tempObstacle.transform.position.x, -0.565685f));
@@ -204,7 +203,6 @@ public class FollowBall : MonoBehaviour
                         }
                         if (spawnProb >= 1f - probThresh)
                         {
-                            Debug.Log("Lower: " + yPosToSpawn);
                             LineRenderer lr = tempObstacle.GetComponent<LineRenderer>();
                             lr.SetPosition(0, tempObstacle.transform.position);
                             lr.SetPosition(1, new Vector2(tempObstacle.transform.position.x, 0.565685f));

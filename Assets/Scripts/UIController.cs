@@ -7,20 +7,20 @@ using UnityEngine.UI;
 
 public class UIController : MonoBehaviour
 {
-    private string[] badComments = { "Yeah, not good..", "Oof...", "You can do better..", "Really? Embarrassing...", "My grandma got farther!", "Did you even try?", "No comment.", "Poor performance.", "Didn't even see the ball moving.", "You might beat me in 1000 years.", "Unacceptable", "Keep dreaming.", "Come on buddy..", "Is that all you got?" };
-    private string[] mediumComments = { "Not bad. But not good.", "Mediocre.", "Almost good...", "We're getting better.", "Now you're trying!", "Meh..", "Try again", "Practice makes perfect.", "Concentrate!", "I think the ball moved a little bit!" };
-    private string[] goodComments = { "Pretty good!", "Nice.", "I think you beat my highscore!", "Wonderful!", "Impressive!", "Looking good!", "Practice did make you perfect!", "HOMERUN!", "In German you'd say: 'Stabil!'" };
-    private string[] insanceComments = { "NANI?!", "IT'S OVER 9000!...almost", "Holy moly!", "Is this on easy mode?", "I can't even count that high!", "I think it's time for a break...", "Screenshot that!", "Become a Swish-Streamer!" };
+    private readonly string[] badComments = { "Yeah, not good..", "Oof...", "You can do better..", "Really? Embarrassing...", "My grandma got farther!", "Did you even try?", "No comment.", "Poor performance.", "Didn't even see the ball moving.", "You might beat me in 1000 years.", "Unacceptable", "Keep dreaming.", "Come on buddy..", "Is that all you got?" };
+    private readonly string[] mediumComments = { "Not bad. But not good.", "Mediocre.", "Almost good...", "We're getting better.", "Now you're trying!", "Meh..", "Try again", "Practice makes perfect.", "Concentrate!", "I think the ball moved a little bit!" };
+    private readonly string[] goodComments = { "Pretty good!", "Nice.", "I think you beat my highscore!", "Wonderful!", "Impressive!", "Looking good!", "Practice did make you perfect!", "HOMERUN!", "In German you'd say: 'Stabil!'" };
+    private readonly string[] insanceComments = { "NANI?!", "IT'S OVER 9000!...almost", "Holy moly!", "Is this on easy mode?", "I can't even count that high!", "I think it's time for a break...", "Screenshot that!", "Become a Swish-Streamer!" };
 
-    private char[] splitMinus = { '-' };
-    private char[] splitStar = { '*' };
-    private char[] splitColon = { ':' };
+    private readonly char[] splitMinus = { '-' };
+    private readonly char[] splitStar = { '*' };
+    private readonly char[] splitColon = { ':' };
 
     /* 
      * If you want to add a new achievement, just add an entry in the dictionary with a new key. Keep the keys in perfect ascending order. 
      * You can add new entries anywhere in the dictionary, not just append at the end.
      */
-    private Dictionary<int, string> achievementDictionary = new Dictionary<int, string> {
+    private readonly Dictionary<int, string> achievementDictionary = new Dictionary<int, string> {
         {0, "Tutorial Master-Finish the tutorial.-25"},
         {1, "Basic Skills-Reach a score of 200 in normal mode.-50"},
         {2, "Extreme-Reach a score of 1200 in normal mode.-120"},
@@ -36,7 +36,7 @@ public class UIController : MonoBehaviour
         {12, "Adblocker-Remove ads.-skin*Adblock"},
     };
 
-    private Vector2[,] ballPreviewLinePositions = new Vector2[5, 4]
+    private readonly Vector2[,] ballPreviewLinePositions = new Vector2[5, 4]
     {
         {new Vector2(0,150), new Vector2(0,-150), Vector2.zero, Vector2.zero },
         {new Vector2(-150,0), new Vector2(150,0), Vector2.zero, Vector2.zero },
@@ -45,7 +45,7 @@ public class UIController : MonoBehaviour
         {new Vector2(0,150), new Vector2(150,0), new Vector2(0,-150), new Vector2(-150,0) }
     };
 
-    private int[,] ballPreviewLineRotations = new int[5, 4]
+    private readonly int[,] ballPreviewLineRotations = new int[5, 4]
     {
         {90,90,0,0},
         {0,0,0,0},
@@ -68,8 +68,10 @@ public class UIController : MonoBehaviour
     private Vector3 cameraStartPos2 = new Vector3(-20, 0, -10);
     private Vector2 middlePanelUp = new Vector2(0, -35);
     private Vector2 middlePanelDown = new Vector2(0, 35);
-    private Vector2 screenBounds;
-    private Color gray;
+    private Color gray = new Color(0.362f, 0.362f, 0.362f);
+    private Color red = new Color(0.9882353f, 0.05490196f, 0.3411765f);
+    private Color green = new Color(0f, 0.8235294f, 0.4485295f);
+    private Color blue = new Color(0.02352941f, 0.5607843f, 0.7372549f);
     private Coroutine currentUpdateGemsCoroutine;
     public Animator ballAnimator;
     public Animator scoreAnimator;
@@ -88,7 +90,9 @@ public class UIController : MonoBehaviour
     public GameObject middlePanel;
     public GameObject backWall;
     public TextMeshProUGUI gameOverPanelComment;
+    public TextMeshProUGUI highScoreText;
     public TextMeshProUGUI highScore;
+    public TextMeshProUGUI highScoreDiff;
     public TextMeshProUGUI score;
     public TextMeshProUGUI gameOverScore;
     public TextMeshProUGUI totalGems;
@@ -120,19 +124,17 @@ public class UIController : MonoBehaviour
     private void Start()
     {
         previewNr = Random.Range(0, 5);
-        gray = new Color(0.362f, 0.362f, 0.362f);
         Application.targetFrameRate = 60;
         Time.fixedDeltaTime = (1f / Application.targetFrameRate);
         Time.maximumDeltaTime = (1.5f / Application.targetFrameRate);
         mainCamera = Camera.main;
-        screenBounds = mainCamera.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height, transform.position.z));
         difficulty = 1;
         ballController.setBall(ball);
         followBall = mainCamera.GetComponent<FollowBall>();
         ballTransform = ball.transform;
         ballRb = ball.GetComponent<Rigidbody2D>();
 
-        if (PlayerPrefs.GetInt("highScore") >= 1200)
+        if (PlayerPrefs.GetInt("highScoreN") >= 1200)
         {
             extremeButton.interactable = true;
             extremeButtonInfo.gameObject.SetActive(true);
@@ -141,22 +143,36 @@ public class UIController : MonoBehaviour
             extremeButtonIngameInfo.gameObject.SetActive(true);
             extremeButtonIngameInfoLocked.gameObject.SetActive(false);
         }
-        switch (difficulty)
+
+        if (!PlayerPrefs.HasKey("lastDifficulty"))
+        {
+            PlayerPrefs.SetInt("lastDifficulty", 1);
+        }
+        highScoreSignE.transform.position = new Vector2(PlayerPrefs.GetFloat("highScoreEPosX"), -3.3f);
+        highScoreSignN.transform.position = new Vector2(PlayerPrefs.GetFloat("highScoreNPosX"), -3.3f);
+        highScoreSignX.transform.position = new Vector2(PlayerPrefs.GetFloat("highScoreXPosX"), -3.3f);
+
+        switch (PlayerPrefs.GetInt("lastDifficulty"))
         {
             case 0:
-                highScoreSignE.transform.position = new Vector2(PlayerPrefs.GetFloat("highScoreEPosX"), -3.3f);
+                highScore.text = PlayerPrefs.GetInt("highScoreE").ToString();
+                highScoreDiff.color = highScoreText.color = highScore.color = blue;
+                highScoreDiff.text = "EASY";
                 break;
             case 1:
-                highScoreSignN.transform.position = new Vector2(PlayerPrefs.GetFloat("highScoreNPosX"), -3.3f);
+                highScore.text = PlayerPrefs.GetInt("highScoreN").ToString();
+                highScoreDiff.color = highScoreText.color = highScore.color = green;
+                highScoreDiff.text = "NORMAL";
                 break;
             case 2:
-                highScoreSignX.transform.position = new Vector2(PlayerPrefs.GetFloat("highScoreXPosX"), -3.3f);
+                highScore.text = PlayerPrefs.GetInt("highScoreX").ToString();
+                highScoreDiff.color = highScoreText.color = highScore.color = red;
+                highScoreDiff.text = "EXTREME";
                 break;
         }
 
         intitializeAchievements();
         setRandomBallPreview();
-        highScore.text = PlayerPrefs.GetInt("highScore").ToString();
         totalGems.text = PlayerPrefs.GetInt("totalGems").ToString();
     }
 
@@ -455,6 +471,7 @@ public class UIController : MonoBehaviour
 
     public void setDifficulty(int difficulty)
     {
+        PlayerPrefs.SetInt("lastDifficulty", difficulty);
         this.difficulty = difficulty;
     }
 
@@ -491,7 +508,6 @@ public class UIController : MonoBehaviour
 
         if (wallBack)
         {
-            Debug.Log(wallBack);
             if (!gameOverPanelComment.text.Equals("That's the wrong direction...") && !gameOverPanelComment.text.Equals("Still the wrong direction."))
             {
                 randomText = "That's the wrong direction...";
@@ -665,6 +681,7 @@ public class UIController : MonoBehaviour
         if (PlayerPrefs.GetInt("ach10") == 0)
         {
             PlayerPrefs.SetInt("achtakeable10", 1);
+            PlayerPrefs.SetInt("ballSkin26", 1);
             activateAchievementInfo(10);
         }
     }
@@ -685,6 +702,8 @@ public class UIController : MonoBehaviour
                 }
                 highScoreSignN.SetActive(false);
                 highScoreSignX.SetActive(false);
+                highScoreDiff.color = highScoreText.color = highScore.color = blue;
+                highScoreDiff.text = "EASY";
                 break;
             case 1:
                 if (PlayerPrefs.GetInt("highScoreN") > 0)
@@ -693,6 +712,8 @@ public class UIController : MonoBehaviour
                 }
                 highScoreSignX.SetActive(false);
                 highScoreSignE.SetActive(false);
+                highScoreDiff.color = highScoreText.color = highScore.color = green;
+                highScoreDiff.text = "NORMAL";
                 break;
             case 2:
                 if (PlayerPrefs.GetInt("highScoreX") > 0)
@@ -701,6 +722,30 @@ public class UIController : MonoBehaviour
                 }
                 highScoreSignE.SetActive(false);
                 highScoreSignN.SetActive(false);
+                highScoreDiff.color = highScoreText.color = highScore.color = red;
+                highScoreDiff.text = "EXTREME";
+                break;
+        }
+    }
+
+    public void CycleHighScores(TextMeshProUGUI diff)
+    {
+        switch (diff.text)
+        {
+            case "EASY":
+                highScore.text = PlayerPrefs.GetInt("highScoreN").ToString();
+                highScoreDiff.color = highScoreText.color = highScore.color = green;
+                highScoreDiff.text = "NORMAL";
+                break;
+            case "NORMAL":
+                highScore.text = PlayerPrefs.GetInt("highScoreX").ToString();
+                highScoreDiff.color = highScoreText.color = highScore.color = red;
+                highScoreDiff.text = "EXTREME";
+                break;
+            case "EXTREME":
+                highScore.text = PlayerPrefs.GetInt("highScoreE").ToString();
+                highScoreDiff.color = highScoreText.color = highScore.color = blue;
+                highScoreDiff.text = "EASY";
                 break;
         }
     }

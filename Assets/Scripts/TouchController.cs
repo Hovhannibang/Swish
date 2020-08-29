@@ -16,7 +16,7 @@ public class TouchController : MonoBehaviour
     private LineRenderer lr;
     private GameObject temp;
 
-    private Queue<GameObject> wallPool = new Queue<GameObject>();
+    private readonly Queue<GameObject> wallPool = new Queue<GameObject>();
 
     private void Start()
     {
@@ -124,7 +124,7 @@ public class TouchController : MonoBehaviour
         if (hitInformation.collider != null)
         {
             GameObject touchedObject = hitInformation.transform.gameObject;
-            if (touchedObject.tag == "Player")
+            if (touchedObject.CompareTag("Player"))
             {
                 return true;
             }

@@ -6,12 +6,12 @@ using UnityEngine.UI;
 
 public class AdController : MonoBehaviour, IUnityAdsListener
 {
-    private string gameId = "3754351";
-    private bool testMode = true;
-    private string banner = "bannerAd";
-    private string rewardedVideo = "rewardedVideo";
-    private string rewardedVideoGems = "rewardedVideoGems";
-    private string rewardedVideoSkin = "rewardedVideoSkin";
+    private readonly string gameId = "3754351";
+    private readonly bool testMode = true;
+    private readonly string banner = "bannerAd";
+    private readonly string rewardedVideo = "rewardedVideo";
+    private readonly string rewardedVideoGems = "rewardedVideoGems";
+    private readonly string rewardedVideoSkin = "rewardedVideoSkin";
     public TextMeshProUGUI gemsText;
     public Button doubleButton;
     public UIController uiController;

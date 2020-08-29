@@ -10,7 +10,7 @@ public class TimeController : MonoBehaviour
     private bool gameOver;
     private bool gamePaused;
     private bool slowDown;
-    private float slowdownFactor = 0.20f;
+    private readonly float slowdownFactor = 0.20f;
     float yVelocity = 0.0f;
 
     private void Start()
