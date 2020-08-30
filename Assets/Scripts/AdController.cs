@@ -47,7 +47,6 @@ public class AdController : MonoBehaviour, IUnityAdsListener
         {
             if (int.Parse(uiController.score.text) > 50 && !uiController.timeController.isGameOver() && !uiController.timeController.isGamePaused())
             {
-                Debug.Log(counter);
                 counter++;
             }
             yield return new WaitForSecondsRealtime(1f);
