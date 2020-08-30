@@ -36,7 +36,10 @@ MonoBehaviour:
     - UnityNotificationAndroidUseCustomActivity
     - UnityNotificationAndroidCustomActivityString
     values:
-    - False
+    - True
     - False
     - com.unity3d.player.UnityPlayerActivity
-  TrackedResourceAssets: []
+  TrackedResourceAssets:
+  - Id: small_icon
+    Type: 0
+    Asset: {fileID: 2800000, guid: 23f4ba10cb597a842895772d97c37629, type: 3}

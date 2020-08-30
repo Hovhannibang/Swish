@@ -18,7 +18,6 @@ public class AdController : MonoBehaviour, IUnityAdsListener
     private bool doubleTaken;
     private int counter;
     public ShopController shopController;
-    private int roundsSinceLastAd = 0;
     private int skinNumber;
     private bool ballSkin;
 
@@ -48,6 +47,7 @@ public class AdController : MonoBehaviour, IUnityAdsListener
         {
             if (int.Parse(uiController.score.text) > 50 && !uiController.timeController.isGameOver() && !uiController.timeController.isGamePaused())
             {
+                Debug.Log(counter);
                 counter++;
             }
             yield return new WaitForSecondsRealtime(1f);
@@ -78,12 +78,11 @@ public class AdController : MonoBehaviour, IUnityAdsListener
     }
     private IEnumerator ShowInterstitialAdCoroutine()
     {
-        if (Advertisement.IsReady() && counter >= 45 && roundsSinceLastAd > 1)
+        if (Advertisement.IsReady() && counter >= 60)
         {
             yield return new WaitForSeconds(0.15f);
             Advertisement.Show();
             counter = 0;
-            roundsSinceLastAd = 0;
         }
         yield return null;
     }
@@ -216,10 +215,5 @@ public class AdController : MonoBehaviour, IUnityAdsListener
     public void ShowBanner()
     {
         Advertisement.Banner.Show();
-    }
-
-    public void incrementRoundsSinceLastAd()
-    {
-        roundsSinceLastAd++;
     }
 }

@@ -13,7 +13,6 @@ public class BallCollisionDetection : MonoBehaviour
     private TextMeshProUGUI score;
     private GameObject ball;
     private FollowBall fb;
-    private bool isColliding;
 
     void Start()
     {
@@ -28,18 +27,8 @@ public class BallCollisionDetection : MonoBehaviour
         score = ballController.getScore();
     }
 
-    void Update()
-    {
-        isColliding = false;
-    }
-
     public void OnTriggerEnter2D(Collider2D collision)
     {
-        if (isColliding)
-        {
-            return;
-        }
-        isColliding = true;
         if (collision.gameObject.CompareTag("destroyBall") || collision.gameObject.CompareTag("Obstacle") || collision.gameObject.CompareTag("ObstacleWallBack"))
         {
             uiController.gameOverScore.text = score.text;
@@ -51,10 +40,6 @@ public class BallCollisionDetection : MonoBehaviour
                     PlayerPrefs.SetInt("achtakeable9", 1);
                     uiController.activateAchievementInfo(9);
                 }
-            }
-            else if (intScore > 100)
-            {
-                ballController.getAdController().incrementRoundsSinceLastAd();
             }
             if (intScore >= 200 && uiController.getDifficulty() > 0 && PlayerPrefs.GetInt("ach1") == 0)
             {
