@@ -157,17 +157,17 @@ public class UIController : MonoBehaviour
         {
             case 0:
                 highScore.text = PlayerPrefs.GetInt("highScoreE").ToString();
-                highScoreDiff.color = highScoreText.color = highScore.color = blue;
+                score.color = highScoreDiff.color = highScoreText.color = highScore.color = blue;
                 highScoreDiff.text = "EASY";
                 break;
             case 1:
                 highScore.text = PlayerPrefs.GetInt("highScoreN").ToString();
-                highScoreDiff.color = highScoreText.color = highScore.color = green;
+                score.color = highScoreDiff.color = highScoreText.color = highScore.color = green;
                 highScoreDiff.text = "NORMAL";
                 break;
             case 2:
                 highScore.text = PlayerPrefs.GetInt("highScoreX").ToString();
-                highScoreDiff.color = highScoreText.color = highScore.color = red;
+                score.color = highScoreDiff.color = highScoreText.color = highScore.color = red;
                 highScoreDiff.text = "EXTREME";
                 break;
         }
@@ -706,7 +706,7 @@ public class UIController : MonoBehaviour
                 }
                 highScoreSignN.SetActive(false);
                 highScoreSignX.SetActive(false);
-                highScoreDiff.color = highScoreText.color = highScore.color = blue;
+                score.color = highScoreDiff.color = highScoreText.color = highScore.color = blue;
                 highScoreDiff.text = "EASY";
                 break;
             case 1:
@@ -716,7 +716,7 @@ public class UIController : MonoBehaviour
                 }
                 highScoreSignX.SetActive(false);
                 highScoreSignE.SetActive(false);
-                highScoreDiff.color = highScoreText.color = highScore.color = green;
+                score.color = highScoreDiff.color = highScoreText.color = highScore.color = green;
                 highScoreDiff.text = "NORMAL";
                 break;
             case 2:
@@ -726,7 +726,7 @@ public class UIController : MonoBehaviour
                 }
                 highScoreSignE.SetActive(false);
                 highScoreSignN.SetActive(false);
-                highScoreDiff.color = highScoreText.color = highScore.color = red;
+                score.color = highScoreDiff.color = highScoreText.color = highScore.color = red;
                 highScoreDiff.text = "EXTREME";
                 break;
         }
