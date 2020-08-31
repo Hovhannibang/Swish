@@ -103,13 +103,16 @@ public class ShopController : MonoBehaviour
 
     private readonly Dictionary<int, string[]> trailSkinDictionary = new Dictionary<int, string[]> {
         {0, new string[]{ "0", "#FFFFFF"} },
-        {1, new string[]{ "100", "#71ABDD"} },
-        {2, new string[]{ "100", "#6BCADE"} },
-        {3, new string[]{ "100", "#82CCB5"} },
-        {4, new string[]{ "100", "#B6D884"} },
-        {5, new string[]{ "100", "#FFF68F"} },
-        {6, new string[]{ "100", "#FDCD79"} },
-        {7, new string[]{ "100", "#F497AA"} },
+        {1, new string[]{ "100", "#0172BD" } },
+        {2, new string[]{ "100", "#FF01FF" } },
+        {3, new string[]{ "100", "#93268F" } },
+        {4, new string[]{ "100", "#009346" } },
+        {5, new string[]{ "100", "#00FF01" } },
+        {6, new string[]{ "100", "#FFFF01" } },
+        {7, new string[]{ "100", "#FACC01" } },
+        {10, new string[]{ "100", "#FF7E01" } },
+        {11, new string[]{ "100", "#FF0002" } },
+        {12, new string[]{ "100", "#D60000" } },
         {8, new string[]{ "#'DOUBLE DOWN'", "gem:#00D272:#009C54" } },
         {9, new string[]{ "#'STARS'", "star:#FFEF68:#D8BB00" } },
     };

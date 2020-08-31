@@ -194,7 +194,7 @@ public class UIController : MonoBehaviour
             {
                 ballRb.AddForce(ballRb.velocity.normalized * 0.05f);
             }
-            if (ball.activeSelf && ballRb.velocity.magnitude < 3f && ball.transform.position.x != -5f && ball.transform.position.x > -11f)
+            if (ball.activeSelf && ballRb.velocity.magnitude < 3f && ball.transform.position.x != -5f && ball.transform.position.x > -11f && false)
             {
                 resetObstacle.SetActive(true);
                 resetObstacle.tag = "destroyBall";
