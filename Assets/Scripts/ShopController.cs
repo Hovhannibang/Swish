@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Purchasing;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
@@ -38,7 +39,7 @@ public class ShopController : MonoBehaviour
     private readonly char[] splitMinus = { '-' };
     private Vector2 textLeft = new Vector2(-77.5f, -4.2f);
 
-    private readonly Dictionary<int, string[]> ballSkinDictionary = new Dictionary<int, string[]> { // TODO SKIN FRAGMENT COLORS
+    private readonly Dictionary<int, string[]> ballSkinDictionary = new Dictionary<int, string[]> {
         {15, new string[]{ "x/5", "soccerball:21-43-58-72:#D0D0D0-#E3E3E3-#282828-#444444" } },
         {16, new string[]{ "x/5", "volleyball:14-35-46-61-72:#50BFD4-#EFEDEE-#FADC60-#F2C42C-#57D0E6" } },
         {17, new string[]{ "x/5", "beachball:3-15-17-33-41-43-44-59-65-72:#FFFFFF-#F26E91-#ED8600-#FFB5C5-#91EDFF-#F5DC1D-#EBF9FF-#7191F0-#FFE940-#FF9000" } },
@@ -133,6 +134,8 @@ public class ShopController : MonoBehaviour
         initiateGemsShop();
         setLastSelectedSkins();
         StartCoroutine(checkIfDailyAvailable());
+
+        noAdsButton.GetComponent<IAPButton>().onPurchaseComplete.AddListener(delegate { removeAds(); });
 
         if (PlayerPrefs.GetInt("adsRemoved") == 1)
         {
@@ -277,12 +280,11 @@ public class ShopController : MonoBehaviour
     {
         for (int i = 0; i < gemButtons.Length; i++)
         {
-            GameObject temp = Instantiate(gemButtons[i]);
-            Button tempButton = temp.GetComponent<Button>();
-            int gemAmount = int.Parse(temp.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text.Replace(" Gems", ""));
+            Button tempButton = gemButtons[i].GetComponent<Button>();
+            int gemAmount = int.Parse(gemButtons[i].transform.GetChild(0).GetComponent<TextMeshProUGUI>().text.Replace(" Gems", ""));
             if (i > 1)
             {
-                tempButton.onClick.AddListener(() => increaseGems(gemAmount));
+                tempButton.GetComponent<IAPButton>().onPurchaseComplete.AddListener(delegate { increaseGems(gemAmount); });                
             }
             else if (i == 0)
             {
@@ -295,7 +297,6 @@ public class ShopController : MonoBehaviour
                     notificationController.setupDailyNotification();
                     customizeButtonAchievementInfo.SetActive(false);
                     gemsButtonAchievementInfo.SetActive(false);
-
                 });
             }
             else if (i == 1)
@@ -305,10 +306,7 @@ public class ShopController : MonoBehaviour
                     adController.ShowRewardedGemsVideo();
                 });
             }
-
-            temp.transform.SetParent(gemsScrollViewContent.transform, false);
         }
-        gemsScrollView.verticalNormalizedPosition = 1;
     }
 
     public void increaseGems(int gems)
@@ -648,7 +646,12 @@ public class ShopController : MonoBehaviour
 
     public void removeAds()
     {
-        //TODO REMOVE ADS IAP
+        StartCoroutine(removeAdsCoroutine());
+    }
+
+    private IEnumerator removeAdsCoroutine()
+    {
+        yield return new WaitForEndOfFrame();
         PlayerPrefs.SetInt("adsRemoved", 1);
         adController.removeBanner();
         moreButton.SetActive(false);

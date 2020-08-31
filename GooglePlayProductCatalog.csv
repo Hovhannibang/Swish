@@ -1,0 +1,7 @@
+Product ID,Published State,Purchase Type,Auto Translate,Locale; Title; Description,Auto Fill Prices,Price,Pricing Template ID
+com.hovgames.swish.gems100,published,managed_by_android,false,en_US;Gems;100 Gems,true,,EUR 0,83 - gems100
+com.hovgames.swish.gems250,published,managed_by_android,false,en_US;Gems;250 Gems,true,,EUR 1,67 - gems250
+com.hovgames.swish.gems500,published,managed_by_android,false,en_US;Gems;500 Gems,true,,EUR 2,50 - gems500
+com.hovgames.swish.gems1000,published,managed_by_android,false,en_US;Gems;1000 Gems,true,,EUR 4,18 - gems1000
+com.hovgames.swish.gems5000,published,managed_by_android,false,en_US;Gems;5000 Gems,true,,EUR 8,37 - gems5000
+com.hovgames.swish.removeads,published,managed_by_android,false,en_US;Remove Ads;Thank you :),true,,EUR 1,67 - removeAds
