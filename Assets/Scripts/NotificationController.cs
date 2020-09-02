@@ -20,7 +20,7 @@ public class NotificationController : MonoBehaviour
     {
         var notification = new AndroidNotification
         {
-            Title = "Claim your daily 50 Gems!",
+            Text = "Claim your daily 50 Gems!",
             FireTime = System.DateTime.Now.AddDays(1),
             SmallIcon = "small_icon"
         };

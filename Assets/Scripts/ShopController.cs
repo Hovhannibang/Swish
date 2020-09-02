@@ -137,6 +137,8 @@ public class ShopController : MonoBehaviour
 
         noAdsButton.GetComponent<IAPButton>().onPurchaseComplete.AddListener(delegate { removeAds(); });
 
+        PlayerPrefs.SetInt("adsRemoved", 1);
+
         if (PlayerPrefs.GetInt("adsRemoved") == 1)
         {
             moreButton.SetActive(false);
@@ -158,6 +160,7 @@ public class ShopController : MonoBehaviour
             }
             else
             {
+                PlayerPrefs.SetInt("ballSkin" + currentKey, 1);
                 TextMeshProUGUI textMesh = temp.transform.GetChild(2).GetChild(1).GetComponent<TextMeshProUGUI>();
                 if (currentElement[0].EndsWith("/5"))
                 {
@@ -218,6 +221,7 @@ public class ShopController : MonoBehaviour
             }
             else
             {
+                PlayerPrefs.SetInt("trailSkin" + currentKey, 1);
                 TextMeshProUGUI textMesh = temp.transform.GetChild(2).GetChild(1).GetComponent<TextMeshProUGUI>();
                 if (currentElement[0].EndsWith("/5"))
                 {

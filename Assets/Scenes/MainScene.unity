@@ -98,7 +98,7 @@ LightmapSettings:
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 0}
-  m_UseShadowmask: 0
+  m_UseShadowmask: 1
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -8871,6 +8871,7 @@ MonoBehaviour:
   uiController: {fileID: 1113512677}
   obstacle: {fileID: 8328190334843738733, guid: 3cb01426341ffd842ae20ba7a9f0e90b,
     type: 3}
+  gem: {fileID: 543914249282145564, guid: ce077c206de8eaa488a37bd7e89cf0ef, type: 3}
   obstacles: {fileID: 328453113}
   touchController: {fileID: 962596100}
 --- !u!114 &519420036
@@ -11773,7 +11774,7 @@ RectTransform:
   m_GameObject: {fileID: 628864778}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.25, y: 0.25, z: 0.25}
+  m_LocalScale: {x: 0.3, y: 0.3, z: 0.3}
   m_Children:
   - {fileID: 754071235}
   m_Father: {fileID: 1109608710}
@@ -26683,7 +26684,7 @@ RectTransform:
   m_GameObject: {fileID: 1294951101}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.25, y: 0.25, z: 0.25}
+  m_LocalScale: {x: 0.3, y: 0.3, z: 0.3}
   m_Children:
   - {fileID: 1760959096}
   m_Father: {fileID: 161927961}

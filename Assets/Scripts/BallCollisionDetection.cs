@@ -31,7 +31,6 @@ public class BallCollisionDetection : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("destroyBall") || collision.gameObject.CompareTag("Obstacle") || collision.gameObject.CompareTag("ObstacleWallBack"))
         {
-            uiController.gameOverScore.text = score.text;
             int intScore = int.Parse(score.text);
             if (collision.gameObject.CompareTag("ObstacleWallBack"))
             {

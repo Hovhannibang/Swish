@@ -189,12 +189,13 @@ public class UIController : MonoBehaviour
             if (intScore < scoreFloat)
             {
                 score.text = ((int)scoreFloat).ToString();
+                gameOverScore.text = score.text;
             }
             if (difficulty == 1 && ballRb.velocity.magnitude <= 7.5f && !timeController.isGamePaused())
             {
                 ballRb.AddForce(ballRb.velocity.normalized * 0.05f);
             }
-            if (ball.activeSelf && ballRb.velocity.magnitude < 3f && ball.transform.position.x != -5f && ball.transform.position.x > -11f && false)
+            if (ball.activeSelf && ballRb.velocity.magnitude < 3f && ball.transform.position.x != -5f && ball.transform.position.x > -11f)
             {
                 resetObstacle.SetActive(true);
                 resetObstacle.tag = "destroyBall";

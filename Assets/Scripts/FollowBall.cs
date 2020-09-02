@@ -14,13 +14,16 @@ public class FollowBall : MonoBehaviour
     private Vector2 screenBounds;
     private Vector3 tempPos;
     public GameObject obstacle;
+    public GameObject gem;
     public GameObject obstacles;
-    private GameObject temp;
+    private GameObject tempObstacle;
+    private GameObject tempGem;
     private TimeController timeController;
     public TouchController touchController;
     private readonly float topYpos = 2.828428f;
     private readonly float deltaYpos = 1.131371f;
     private readonly Queue<GameObject> obstaclePool = new Queue<GameObject>();
+    private readonly Queue<GameObject> gemPool = new Queue<GameObject>();
 
     private void Start()
     {
@@ -31,10 +34,14 @@ public class FollowBall : MonoBehaviour
 
         for (int i = 0; i < 10; i++)
         {
-            temp = Instantiate(obstacle);
-            temp.transform.SetParent(obstacles.transform);
-            temp.SetActive(false);
-            obstaclePool.Enqueue(temp);
+            tempObstacle = Instantiate(obstacle);
+            tempObstacle.transform.SetParent(obstacles.transform);
+            tempObstacle.SetActive(false);
+            obstaclePool.Enqueue(tempObstacle);
+
+            tempGem = Instantiate(gem);
+            tempGem.transform.SetParent(obstacles.transform);
+            tempGem.SetActive(false);
         }
     }
 
@@ -209,6 +216,37 @@ public class FollowBall : MonoBehaviour
                             lr.enabled = true;
                             tempObstacle.GetComponent<ObstacleMoveController>().pingPongUp = true;
                         }
+
+                        float gemProb = Random.value;
+
+                        if (gemProb > 0.9f && currentScore > 200)
+                        {
+                            GameObject tempGem = obstaclePool.Dequeue();
+                            tempObstacle.SetActive(true);
+                            gemPool.Enqueue(tempGem);
+                            switch (yPosToSpawn)
+                            {
+                                case 2.828428f:
+                                    tempGem.transform.position = new Vector3(tempObstacle.transform.position.x, -0.565685f, 0f);
+                                    break;
+                                case 1.697057f:
+                                    tempGem.transform.position = new Vector3(tempObstacle.transform.position.x, -1.697056f, 0f);
+                                    break;
+                                case 0.565686f:
+                                    tempGem.transform.position = new Vector3(tempObstacle.transform.position.x, -2.828427f, 0f);
+                                    break;
+                                case -0.565685f:
+                                    tempGem.transform.position = new Vector3(tempObstacle.transform.position.x, 2.828428f, 0f);
+                                    break;
+                                case -1.697056f:
+                                    tempGem.transform.position = new Vector3(tempObstacle.transform.position.x, 1.697057f, 0f);
+                                    break;
+                                case -2.828427f:
+                                    tempGem.transform.position = new Vector3(tempObstacle.transform.position.x, 0.565686f, 0f);
+                                    break;
+                            }
+                        }
+
                     }
                 }
                 else
