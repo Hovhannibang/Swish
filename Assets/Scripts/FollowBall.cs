@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public class FollowBall : MonoBehaviour
@@ -42,6 +41,7 @@ public class FollowBall : MonoBehaviour
             tempGem = Instantiate(gem);
             tempGem.transform.SetParent(obstacles.transform);
             tempGem.SetActive(false);
+            gemPool.Enqueue(tempGem);
         }
     }
 
@@ -106,28 +106,34 @@ public class FollowBall : MonoBehaviour
     {
         if (timeController.isGameStarted() && transform.position.x + screenBounds.x > previousSpawnX + 4f)
         {
+            int position = 0;
             float yPosToSpawn = topYpos;
             bool spawn = true;
             float randomValue = Random.value;
             if (randomValue >= 0f && randomValue < 0.075f)
             {
                 yPosToSpawn = topYpos - deltaYpos;
+                position = 1;
             }
             else if (randomValue >= 0.075f && randomValue < 0.125f)
             {
                 yPosToSpawn = topYpos - deltaYpos * 2;
+                position = 2;
             }
             else if (randomValue >= 0.125f && randomValue < 0.3f)
             {
                 yPosToSpawn = topYpos - deltaYpos * 3;
+                position = 3;
             }
             else if (randomValue >= 0.3f && randomValue < 0.6f)
             {
                 yPosToSpawn = topYpos - deltaYpos * 4;
+                position = 4;
             }
             else if (randomValue >= 0.06f && randomValue < 0.725f)
             {
                 yPosToSpawn = topYpos - deltaYpos * 5;
+                position = 5;
             }
 
             if (previousSpawnY == yPosToSpawn)
@@ -216,37 +222,34 @@ public class FollowBall : MonoBehaviour
                             lr.enabled = true;
                             tempObstacle.GetComponent<ObstacleMoveController>().pingPongUp = true;
                         }
-
-                        float gemProb = Random.value;
-
-                        if (gemProb > 0.9f && currentScore > 200)
+                    }
+                    float gemProb = Random.value;
+                    if (gemProb > 0.92f && uiController.getCurrentScore() > 150)
+                    {
+                        GameObject gemToSpawn = gemPool.Dequeue();
+                        gemToSpawn.SetActive(true);
+                        gemPool.Enqueue(gemToSpawn);
+                        switch (position)
                         {
-                            GameObject tempGem = obstaclePool.Dequeue();
-                            tempObstacle.SetActive(true);
-                            gemPool.Enqueue(tempGem);
-                            switch (yPosToSpawn)
-                            {
-                                case 2.828428f:
-                                    tempGem.transform.position = new Vector3(tempObstacle.transform.position.x, -0.565685f, 0f);
-                                    break;
-                                case 1.697057f:
-                                    tempGem.transform.position = new Vector3(tempObstacle.transform.position.x, -1.697056f, 0f);
-                                    break;
-                                case 0.565686f:
-                                    tempGem.transform.position = new Vector3(tempObstacle.transform.position.x, -2.828427f, 0f);
-                                    break;
-                                case -0.565685f:
-                                    tempGem.transform.position = new Vector3(tempObstacle.transform.position.x, 2.828428f, 0f);
-                                    break;
-                                case -1.697056f:
-                                    tempGem.transform.position = new Vector3(tempObstacle.transform.position.x, 1.697057f, 0f);
-                                    break;
-                                case -2.828427f:
-                                    tempGem.transform.position = new Vector3(tempObstacle.transform.position.x, 0.565686f, 0f);
-                                    break;
-                            }
+                            case 0:
+                                gemToSpawn.transform.position = new Vector3(tempObstacle.transform.position.x, -0.565685f, 0f);
+                                break;
+                            case 1:
+                                gemToSpawn.transform.position = new Vector3(tempObstacle.transform.position.x, -1.697056f, 0f);
+                                break;
+                            case 2:
+                                gemToSpawn.transform.position = new Vector3(tempObstacle.transform.position.x, -2.828427f, 0f);
+                                break;
+                            case 3:
+                                gemToSpawn.transform.position = new Vector3(tempObstacle.transform.position.x, 2.828428f, 0f);
+                                break;
+                            case 4:
+                                gemToSpawn.transform.position = new Vector3(tempObstacle.transform.position.x, 1.697057f, 0f);
+                                break;
+                            case 5:
+                                gemToSpawn.transform.position = new Vector3(tempObstacle.transform.position.x, 0.565686f, 0f);
+                                break;
                         }
-
                     }
                 }
                 else

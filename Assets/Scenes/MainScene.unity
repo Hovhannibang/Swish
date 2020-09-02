@@ -21863,13 +21863,15 @@ MonoBehaviour:
   gameOverPanel: {fileID: 1659080806}
   middlePanel: {fileID: 293679685}
   backWall: {fileID: 813108078}
+  pauseButton: {fileID: 1128541412}
+  pausePanel: {fileID: 434261411}
   gameOverPanelComment: {fileID: 1435912576}
   highScoreText: {fileID: 270673188}
   highScore: {fileID: 1218323607}
   highScoreDiff: {fileID: 1204913287}
   score: {fileID: 2028346447}
   gameOverScore: {fileID: 1980348062}
-  totalGems: {fileID: 967199564}
+  totalGemsText: {fileID: 967199564}
   earnedGems: {fileID: 1683167026}
   extremeButtonInfo: {fileID: 715224504}
   extremeButtonInfoLocked: {fileID: 758755226}
@@ -21882,6 +21884,7 @@ MonoBehaviour:
   adController: {fileID: 820218665}
   timeController: {fileID: 519420036}
   shopController: {fileID: 420839664}
+  touchController: {fileID: 962596100}
   backgroundSource: {fileID: 519420037}
   achievementButtonPrefab: {fileID: 1308974779161498893, guid: c424e3cd232bd62418f9cf8829a071c9,
     type: 3}
@@ -21993,28 +21996,6 @@ MonoBehaviour:
       - m_Target: {fileID: 1113512677}
         m_MethodName: pauseGame
         m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 434261411}
-        m_MethodName: SetActive
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
-        m_CallState: 2
-      - m_Target: {fileID: 1128541412}
-        m_MethodName: SetActive
-        m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine

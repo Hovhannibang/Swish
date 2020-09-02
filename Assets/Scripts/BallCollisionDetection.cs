@@ -13,6 +13,7 @@ public class BallCollisionDetection : MonoBehaviour
     private TextMeshProUGUI score;
     private GameObject ball;
     private FollowBall fb;
+    private bool isColliding;
 
     void Start()
     {
@@ -27,8 +28,15 @@ public class BallCollisionDetection : MonoBehaviour
         score = ballController.getScore();
     }
 
+    private void Update()
+    {
+        isColliding = false;
+    }
+
     public void OnTriggerEnter2D(Collider2D collision)
     {
+        if (isColliding) return;
+        isColliding = true;
         if (collision.gameObject.CompareTag("destroyBall") || collision.gameObject.CompareTag("Obstacle") || collision.gameObject.CompareTag("ObstacleWallBack"))
         {
             int intScore = int.Parse(score.text);
@@ -138,6 +146,13 @@ public class BallCollisionDetection : MonoBehaviour
             ball.SetActive(false);
             uiController.StartCoroutine(uiController.waitAndRetry());
         }
+        else if (collision.gameObject.CompareTag("collectibleGem"))
+        {
+            collision.gameObject.SetActive(false);
+            PlayerPrefs.SetInt("totalGems", uiController.getTotalGems() + 1);
+            uiController.getTotalGemsText().text = PlayerPrefs.GetInt("totalGems").ToString();
+            shopController.updateAmount();
+        }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -168,7 +183,7 @@ public class BallCollisionDetection : MonoBehaviour
             {
                 gemAmount /= 2;
             }
-            PlayerPrefs.SetInt("totalGems", ballController.getUIController().getTotalGems() + gemAmount);
+            PlayerPrefs.SetInt("totalGems",uiController.getTotalGems() + gemAmount);
             uiController.setEarnedGems(gemAmount);
             shopController.updateAmount();
         }

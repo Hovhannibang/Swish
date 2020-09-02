@@ -89,13 +89,15 @@ public class UIController : MonoBehaviour
     public GameObject gameOverPanel;
     public GameObject middlePanel;
     public GameObject backWall;
+    public GameObject pauseButton;
+    public GameObject pausePanel;
     public TextMeshProUGUI gameOverPanelComment;
     public TextMeshProUGUI highScoreText;
     public TextMeshProUGUI highScore;
     public TextMeshProUGUI highScoreDiff;
     public TextMeshProUGUI score;
     public TextMeshProUGUI gameOverScore;
-    public TextMeshProUGUI totalGems;
+    public TextMeshProUGUI totalGemsText;
     public TextMeshProUGUI earnedGems;
     public TextMeshProUGUI extremeButtonInfo;
     public TextMeshProUGUI extremeButtonInfoLocked;
@@ -108,6 +110,7 @@ public class UIController : MonoBehaviour
     public AdController adController;
     public TimeController timeController;
     public ShopController shopController;
+    public TouchController touchController;
     public AudioSource backgroundSource;
     public GameObject achievementButtonPrefab;
     public ScrollRect achievementScrollView;
@@ -171,13 +174,13 @@ public class UIController : MonoBehaviour
                 highScoreDiff.text = "EXTREME";
                 break;
         }
-        if(PlayerPrefs.GetInt("achtakeable10") == 1 || PlayerPrefs.GetInt("ach10") == 1)
+        if (PlayerPrefs.GetInt("achtakeable10") == 1 || PlayerPrefs.GetInt("ach10") == 1)
         {
             questionMarkButton.interactable = false;
         }
         intitializeAchievements();
         setRandomBallPreview();
-        totalGems.text = PlayerPrefs.GetInt("totalGems").ToString();
+        totalGemsText.text = PlayerPrefs.GetInt("totalGems").ToString();
     }
 
     void FixedUpdate()
@@ -306,47 +309,47 @@ public class UIController : MonoBehaviour
     private IEnumerator updateTotalGemsCoroutine()
     {
         int playerPrefsGems = PlayerPrefs.GetInt("totalGems");
-        if (int.Parse(totalGems.text) < playerPrefsGems)
+        if (int.Parse(totalGemsText.text) < playerPrefsGems)
         {
-            while (int.Parse(totalGems.text) < playerPrefsGems)
+            while (int.Parse(totalGemsText.text) < playerPrefsGems)
             {
-                totalGems.text = (int.Parse(totalGems.text) + 5).ToString();
+                totalGemsText.text = (int.Parse(totalGemsText.text) + 5).ToString();
                 yield return new WaitForEndOfFrame();
             }
         }
         else
         {
-            while (int.Parse(totalGems.text) > playerPrefsGems)
+            while (int.Parse(totalGemsText.text) > playerPrefsGems)
             {
-                totalGems.text = (int.Parse(totalGems.text) - 5).ToString();
+                totalGemsText.text = (int.Parse(totalGemsText.text) - 5).ToString();
                 yield return new WaitForEndOfFrame();
             }
         }
-        switch (int.Parse(totalGems.text) - playerPrefsGems)
+        switch (int.Parse(totalGemsText.text) - playerPrefsGems)
         {
             case 4:
-                totalGems.text = (int.Parse(totalGems.text) - 4).ToString();
+                totalGemsText.text = (int.Parse(totalGemsText.text) - 4).ToString();
                 break;
             case 3:
-                totalGems.text = (int.Parse(totalGems.text) - 3).ToString();
+                totalGemsText.text = (int.Parse(totalGemsText.text) - 3).ToString();
                 break;
             case 2:
-                totalGems.text = (int.Parse(totalGems.text) - 2).ToString();
+                totalGemsText.text = (int.Parse(totalGemsText.text) - 2).ToString();
                 break;
             case 1:
-                totalGems.text = (int.Parse(totalGems.text) - 1).ToString();
+                totalGemsText.text = (int.Parse(totalGemsText.text) - 1).ToString();
                 break;
             case -1:
-                totalGems.text = (int.Parse(totalGems.text) + 1).ToString();
+                totalGemsText.text = (int.Parse(totalGemsText.text) + 1).ToString();
                 break;
             case -2:
-                totalGems.text = (int.Parse(totalGems.text) + 2).ToString();
+                totalGemsText.text = (int.Parse(totalGemsText.text) + 2).ToString();
                 break;
             case -3:
-                totalGems.text = (int.Parse(totalGems.text) + 3).ToString();
+                totalGemsText.text = (int.Parse(totalGemsText.text) + 3).ToString();
                 break;
             case -4:
-                totalGems.text = (int.Parse(totalGems.text) + 4).ToString();
+                totalGemsText.text = (int.Parse(totalGemsText.text) + 4).ToString();
                 break;
             default:
                 break;
@@ -365,7 +368,7 @@ public class UIController : MonoBehaviour
         }
     }
 
-    public void deactivateWallsAndObstacles()
+    public void deactivateWallsAndObstaclesAndGems()
     {
         foreach (GameObject wall in GameObject.FindGameObjectsWithTag("bounceOff"))
         {
@@ -375,6 +378,11 @@ public class UIController : MonoBehaviour
         foreach (GameObject obstacle in GameObject.FindGameObjectsWithTag("Obstacle"))
         {
             obstacle.SetActive(false);
+        }
+
+        foreach (GameObject gem in GameObject.FindGameObjectsWithTag("collectibleGem"))
+        {
+            gem.SetActive(false);
         }
     }
     public void retry()
@@ -418,7 +426,7 @@ public class UIController : MonoBehaviour
             startGame();
             shootBall();
         }
-        deactivateWallsAndObstacles();
+        deactivateWallsAndObstaclesAndGems();
         wallBack.SetActive(true);
         yield return new WaitForSeconds(0.25f);
         if (!ball.GetComponent<ParticleSystem>().emission.enabled)
@@ -438,9 +446,14 @@ public class UIController : MonoBehaviour
 
     public void pauseGame()
     {
-        timeController.setGamePaused(true);
-        backgroundSource.Pause();
-        Time.timeScale = 0f;
+        if (!touchController.isLineDrawing())
+        {
+            timeController.setGamePaused(true);
+            backgroundSource.Pause();
+            Time.timeScale = 0f;
+            pausePanel.SetActive(true);
+            pauseButton.SetActive(false);
+        }
     }
 
     public void resumeGame()
@@ -459,7 +472,7 @@ public class UIController : MonoBehaviour
             yield return new WaitForFixedUpdate();
         }
         mainCamera.transform.position = cameraStartPos1;
-        deactivateWallsAndObstacles();
+        deactivateWallsAndObstaclesAndGems();
         wallBack.SetActive(true);
         yield return null;
     }
@@ -548,7 +561,12 @@ public class UIController : MonoBehaviour
 
     public int getTotalGems()
     {
-        return int.Parse(totalGems.text);
+        return int.Parse(totalGemsText.text);
+    }
+
+    public TextMeshProUGUI getTotalGemsText()
+    {
+        return totalGemsText;
     }
 
     public void setEarnedGems(int amount)

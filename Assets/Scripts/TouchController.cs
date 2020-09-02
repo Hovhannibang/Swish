@@ -15,6 +15,7 @@ public class TouchController : MonoBehaviour
     private bool spawned;
     private LineRenderer lr;
     private GameObject temp;
+    private bool lineDrawing;
 
     private readonly Queue<GameObject> wallPool = new Queue<GameObject>();
 
@@ -40,6 +41,7 @@ public class TouchController : MonoBehaviour
             Vector3 touchPosition = mainCamera.ScreenToWorldPoint(touch.position);
             if (touch.phase == TouchPhase.Began && touchPosition.y < 3.6 && !isTouchOnBall(touchPosition))
             {
+                lineDrawing = true;
                 tempWall = wallPool.Dequeue();
                 wallPool.Enqueue(tempWall);
                 tempWall.GetComponent<EdgeCollider2D>().points = new Vector2[] { topPos, topPos };
@@ -89,6 +91,7 @@ public class TouchController : MonoBehaviour
             }
             if (touch.phase == TouchPhase.Ended)
             {
+                lineDrawing = false;
                 if (tempWall != null)
                 {
                     lr = tempWall.GetComponent<LineRenderer>();
@@ -130,5 +133,10 @@ public class TouchController : MonoBehaviour
             }
         }
         return false;
+    }
+
+    public bool isLineDrawing()
+    {
+        return lineDrawing;
     }
 }

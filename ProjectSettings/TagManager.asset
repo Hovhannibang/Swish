@@ -18,6 +18,7 @@ TagManager:
   - Player1
   - reset
   - ObstacleWallBack
+  - collectibleGem
   layers:
   - Default
   - TransparentFX
