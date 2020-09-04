@@ -7,6 +7,7 @@ public class TouchController : MonoBehaviour
     public Camera mainCamera;
     public GameObject wall;
     public GameObject walls;
+    public UIController uiController;
     private GameObject tempWall;
     private Vector2 topPos = new Vector2(0f, 10f);
     private TimeController timeController;
@@ -16,11 +17,18 @@ public class TouchController : MonoBehaviour
     private LineRenderer lr;
     private GameObject temp;
     private bool lineDrawing;
+    private bool touchBlock;
+    private bool isTutorial;
 
     private readonly Queue<GameObject> wallPool = new Queue<GameObject>();
 
     private void Start()
     {
+        if (PlayerPrefs.GetInt("isTutorial") == 0)
+        {
+            isTutorial = true;
+            touchBlock = true;
+        }
         timeController = mainCamera.GetComponent<TimeController>();
 
         for (int i = 0; i < 10; i++)
@@ -32,76 +40,86 @@ public class TouchController : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
     private void Update()
     {
-        if (Input.touchCount > 0 && !timeController.isGameOver() && timeController.isGameStarted() && !timeController.isGamePaused())
+        if (!touchBlock)
         {
-            touch = Input.GetTouch(0);
-            Vector3 touchPosition = mainCamera.ScreenToWorldPoint(touch.position);
-            if (touch.phase == TouchPhase.Began && touchPosition.y < 3.6 && !isTouchOnBall(touchPosition))
+            if (Input.touchCount > 0 && !timeController.isGameOver() && timeController.isGameStarted() && !timeController.isGamePaused())
             {
-                lineDrawing = true;
-                tempWall = wallPool.Dequeue();
-                wallPool.Enqueue(tempWall);
-                tempWall.GetComponent<EdgeCollider2D>().points = new Vector2[] { topPos, topPos };
-                spawned = false;
-                collided = false;
+                touch = Input.GetTouch(0);
+                Vector3 touchPosition = mainCamera.ScreenToWorldPoint(touch.position);
+                if (touch.phase == TouchPhase.Began && touchPosition.y < 3.6 && !isTouchOnBall(touchPosition))
+                {
+                    if (isTutorial)
+                    {
+                        uiController.deactivateCurrentHelper();
+                    }
+                    lineDrawing = true;
+                    tempWall = wallPool.Dequeue();
+                    wallPool.Enqueue(tempWall);
+                    tempWall.GetComponent<EdgeCollider2D>().points = new Vector2[] { topPos, topPos };
+                    spawned = false;
+                    collided = false;
 
-                lr = tempWall.GetComponent<LineRenderer>();
-                if (touchPosition.y > 3.4f)
-                {
-                    lr.SetPosition(0, new Vector3(touchPosition.x, 3.4f, 0f));
-                    lr.SetPosition(1, new Vector3(touchPosition.x, 3.4f, 0f));
+                    lr = tempWall.GetComponent<LineRenderer>();
+                    if (touchPosition.y > 3.4f)
+                    {
+                        lr.SetPosition(0, new Vector3(touchPosition.x, 3.4f, 0f));
+                        lr.SetPosition(1, new Vector3(touchPosition.x, 3.4f, 0f));
+                    }
+                    else if (touchPosition.y < -3.4f)
+                    {
+                        lr.SetPosition(0, new Vector3(touchPosition.x, -3.4f, 0f));
+                        lr.SetPosition(1, new Vector3(touchPosition.x, -3.4f, 0f));
+                    }
+                    else
+                    {
+                        lr.SetPosition(0, new Vector3(touchPosition.x, touchPosition.y, 0f));
+                        lr.SetPosition(1, new Vector3(touchPosition.x, touchPosition.y, 0f));
+                    }
+                    tempWall.SetActive(true);
+                    timeController.startSlowdown();
                 }
-                else if (touchPosition.y < -3.4f)
-                {
-                    lr.SetPosition(0, new Vector3(touchPosition.x, -3.4f, 0f));
-                    lr.SetPosition(1, new Vector3(touchPosition.x, -3.4f, 0f));
-                }
-                else
-                {
-                    lr.SetPosition(0, new Vector3(touchPosition.x, touchPosition.y, 0f));
-                    lr.SetPosition(1, new Vector3(touchPosition.x, touchPosition.y, 0f));
-                }
-                tempWall.SetActive(true);
-                timeController.startSlowdown();
-            }
-            if (tempWall != null && !collided && !spawned)
-            {
-                lr = tempWall.GetComponent<LineRenderer>();
-                if (touchPosition.y > 3.4f)
-                {
-                    lr.SetPosition(1, new Vector3(touchPosition.x, 3.4f, 0f));
-                }
-                else if (touchPosition.y < -3.4f)
-                {
-                    lr.SetPosition(1, new Vector3(touchPosition.x, -3.4f, 0f));
-                }
-                else
-                {
-                    lr.SetPosition(1, new Vector3(touchPosition.x, touchPosition.y, 0f));
-                }
-                Vector3 startPos = lr.GetPosition(0);
-                Vector3 endPos = lr.GetPosition(1);
-                Vector3 dir = endPos - startPos;
-                float dist = Mathf.Clamp(Vector3.Distance(startPos, endPos), 0, 2.5f);
-                lr.SetPosition(1, startPos + (dir.normalized * dist));
-                tempWall.GetComponent<EdgeCollider2D>().points = new Vector2[] { tempWall.GetComponent<LineRenderer>().GetPosition(0), tempWall.GetComponent<LineRenderer>().GetPosition(1) };
-            }
-            if (touch.phase == TouchPhase.Ended)
-            {
-                lineDrawing = false;
-                if (tempWall != null)
+                if (tempWall != null && !collided && !spawned)
                 {
                     lr = tempWall.GetComponent<LineRenderer>();
-                    if ((lr.GetPosition(0) - lr.GetPosition(1)).sqrMagnitude < 0.05 && !collided)
+                    if (touchPosition.y > 3.4f)
                     {
-                        tempWall.SetActive(false);
+                        lr.SetPosition(1, new Vector3(touchPosition.x, 3.4f, 0f));
                     }
+                    else if (touchPosition.y < -3.4f)
+                    {
+                        lr.SetPosition(1, new Vector3(touchPosition.x, -3.4f, 0f));
+                    }
+                    else
+                    {
+                        lr.SetPosition(1, new Vector3(touchPosition.x, touchPosition.y, 0f));
+                    }
+                    Vector3 startPos = lr.GetPosition(0);
+                    Vector3 endPos = lr.GetPosition(1);
+                    Vector3 dir = endPos - startPos;
+                    float dist = Mathf.Clamp(Vector3.Distance(startPos, endPos), 0, 2.5f);
+                    lr.SetPosition(1, startPos + (dir.normalized * dist));
+                    tempWall.GetComponent<EdgeCollider2D>().points = new Vector2[] { tempWall.GetComponent<LineRenderer>().GetPosition(0), tempWall.GetComponent<LineRenderer>().GetPosition(1) };
                 }
-                spawned = true;
-                timeController.endSlowdown();
+                if (touch.phase == TouchPhase.Ended)
+                {
+                    lineDrawing = false;
+                    if (tempWall != null)
+                    {
+                        lr = tempWall.GetComponent<LineRenderer>();
+                        if ((lr.GetPosition(0) - lr.GetPosition(1)).sqrMagnitude < 0.05 && !collided)
+                        {
+                            tempWall.SetActive(false);
+                        }
+                    }
+                    if (isTutorial)
+                    {
+                        uiController.activateNextHelp();
+                    }
+                    spawned = true;
+                    timeController.endSlowdown();
+                }
             }
         }
     }
@@ -138,5 +156,14 @@ public class TouchController : MonoBehaviour
     public bool isLineDrawing()
     {
         return lineDrawing;
+    }
+
+    public void setTouchBlock(bool touchBlock)
+    {
+        this.touchBlock = touchBlock;
+    }
+    public void setIsTutorial(bool isTutorial)
+    {
+        this.isTutorial = isTutorial;
     }
 }

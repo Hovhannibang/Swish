@@ -9,6 +9,7 @@ public class AudioController : MonoBehaviour
     private GameObject audioSourceObj;
     public AudioClip[] explosions;
     public AudioClip[] bounces;
+    public AudioClip gemSound;
     public AudioSource backgroundSource;
     public GameObject audioSourcePrefab;
     public GameObject audioSources;
@@ -53,6 +54,11 @@ public class AudioController : MonoBehaviour
     public void playBounce()
     {
         playSound(bounces[Random.Range(0, bounces.Length)], sfxVolume);
+    }
+
+    public void playGemSound()
+    {
+        playSound(gemSound, sfxVolume);
     }
 
     public void playSound(AudioClip sound, float volume)

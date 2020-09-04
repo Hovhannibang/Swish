@@ -56,7 +56,9 @@ public class UIController : MonoBehaviour
 
     private int difficulty;
     private int previewNr;
+    private int currentHelper;
     private bool random3Flip;
+    private bool isTutorial;
     private float scoreFloat = 0f;
     private Camera mainCamera;
     private Rigidbody2D ballRb;
@@ -103,9 +105,18 @@ public class UIController : MonoBehaviour
     public TextMeshProUGUI extremeButtonInfoLocked;
     public TextMeshProUGUI extremeButtonIngameInfo;
     public TextMeshProUGUI extremeButtonIngameInfoLocked;
+    public Button tutorialButton;
+    public Button customizeButton;
+    public Button playButton;
+    public Button moreButton;
+    public Button moreButtonAdsRemoved;
+    public Button noAdsButton;
     public Button extremeButton;
     public Button extremeButtonIngame;
     public Button questionMarkButton;
+    public Button pausePanelHomeButton;
+    public Button pausePanelRestartButton;
+    public Button pausePanelSkipTutorialButton;
     public BallController ballController;
     public AdController adController;
     public TimeController timeController;
@@ -122,11 +133,14 @@ public class UIController : MonoBehaviour
     public GameObject highScoreSignE;
     public GameObject highScoreSignN;
     public GameObject highScoreSignX;
+    public GameObject[] helper;
+    public GameObject[] helperLines;
     public GameObject[] ballPreviewLines;
     public AnimationClip[] ballPreviewAnimations;
 
     private void Start()
     {
+        isTutorial = PlayerPrefs.GetInt("isTutorial") == 0;
         previewNr = Random.Range(0, 5);
         Application.targetFrameRate = 60;
         Time.fixedDeltaTime = (1f / Application.targetFrameRate);
@@ -181,6 +195,21 @@ public class UIController : MonoBehaviour
         intitializeAchievements();
         setRandomBallPreview();
         totalGemsText.text = PlayerPrefs.GetInt("totalGems").ToString();
+
+        if (isTutorial)
+        {
+            currentHelper = -1;
+            activateNextHelp();
+            playButton.gameObject.SetActive(false);
+            customizeButton.gameObject.SetActive(false);
+            moreButton.gameObject.SetActive(false);
+            noAdsButton.gameObject.SetActive(false);
+            highScoreText.gameObject.SetActive(false);
+            tutorialButton.gameObject.SetActive(true);
+            pausePanelHomeButton.gameObject.SetActive(false);
+            pausePanelRestartButton.gameObject.SetActive(false);
+            pausePanelSkipTutorialButton.gameObject.SetActive(true);
+        }
     }
 
     void FixedUpdate()
@@ -215,6 +244,23 @@ public class UIController : MonoBehaviour
         }
     }
 
+    public void skipTutorial()
+    {
+        isTutorial = false;
+        PlayerPrefs.SetInt("isTutorial", 1);
+        PlayerPrefs.SetInt("lastDifficulty", 1);
+        CycleHighScoresInt(0);
+        playButton.gameObject.SetActive(true);
+        customizeButton.gameObject.SetActive(true);
+        moreButton.gameObject.SetActive(true);
+        noAdsButton.gameObject.SetActive(true);
+        highScoreText.gameObject.SetActive(true);
+        tutorialButton.gameObject.SetActive(false);
+        pausePanelHomeButton.gameObject.SetActive(true);
+        pausePanelRestartButton.gameObject.SetActive(true);
+        pausePanelSkipTutorialButton.gameObject.SetActive(false);
+        stopGame();
+    }
 
     public void startGame()
     {
@@ -223,17 +269,20 @@ public class UIController : MonoBehaviour
         score.text = "0";
         earnedGems.text = "0";
         ball.transform.position = ballStartPos;
-        score.gameObject.SetActive(true);
-        pauseButtonAnimator.gameObject.SetActive(true);
-        scoreAnimator.SetBool("fadeIn", true);
-        pauseButtonAnimator.SetBool("fadeIn", true);
-        ballAnimator.SetBool("moveToStart", true);
-        titlePanelAnimator.SetBool("fadeIn", false);
-        titlePanelAnimator.SetBool("fade", true);
+        if (!isTutorial)
+        {
+            score.gameObject.SetActive(true);
+            scoreAnimator.SetBool("fadeIn", true);
+            difficultySelectAnimator.SetBool("fadeIn", false);
+            difficultySelectAnimator.SetBool("fade", true);
+        }
         middlePanelAnimator.SetBool("fadeIn", false);
         middlePanelAnimator.SetBool("fade", true);
-        difficultySelectAnimator.SetBool("fadeIn", false);
-        difficultySelectAnimator.SetBool("fade", true);
+        titlePanelAnimator.SetBool("fadeIn", false);
+        titlePanelAnimator.SetBool("fade", true);
+        pauseButtonAnimator.gameObject.SetActive(true);
+        pauseButtonAnimator.SetBool("fadeIn", true);
+        ballAnimator.SetBool("moveToStart", true);
 
         backgroundSource.Play();
         timeController.setGameOver(false);
@@ -410,6 +459,15 @@ public class UIController : MonoBehaviour
         timeController.setGamePaused(false);
         yield return null;
     }
+
+    public IEnumerator waitAndRetryTutorial()
+    {
+        yield return new WaitForSeconds(1f);
+        retry();
+        timeController.setGamePaused(false);
+        yield return null;
+    }
+
     private IEnumerator cameraToStartCoroutine(bool stopgame)
     {
         wallBack.SetActive(false);
@@ -773,6 +831,28 @@ public class UIController : MonoBehaviour
         }
     }
 
+    private void CycleHighScoresInt(int diff)
+    {
+        switch (diff)
+        {
+            case 0:
+                highScore.text = PlayerPrefs.GetInt("highScoreN").ToString();
+                highScoreDiff.color = highScoreText.color = highScore.color = green;
+                highScoreDiff.text = "NORMAL";
+                break;
+            case 1:
+                highScore.text = PlayerPrefs.GetInt("highScoreX").ToString();
+                highScoreDiff.color = highScoreText.color = highScore.color = red;
+                highScoreDiff.text = "EXTREME";
+                break;
+            case 2:
+                highScore.text = PlayerPrefs.GetInt("highScoreE").ToString();
+                highScoreDiff.color = highScoreText.color = highScore.color = blue;
+                highScoreDiff.text = "EASY";
+                break;
+        }
+    }
+
     public void setHighscoreSign(float ballXpos)
     {
         switch (difficulty)
@@ -860,6 +940,29 @@ public class UIController : MonoBehaviour
                 ballPreviewLines[i].transform.localPosition = ballPreviewLinePositions[previewNr, i];
                 ballPreviewLines[i].transform.localRotation = Quaternion.Euler(0, 0, ballPreviewLineRotations[previewNr, i]);
             }
+        }
+    }
+
+    public void setIsTutorial(bool isTutorial)
+    {
+        this.isTutorial = isTutorial;
+    }
+
+    public void activateNextHelp()
+    {
+        currentHelper++;
+        if (currentHelper < helper.Length)
+        {
+            helper[currentHelper].SetActive(true);
+            helperLines[currentHelper].SetActive(true);
+        }
+    }
+
+    public void deactivateCurrentHelper()
+    {
+        if(currentHelper < helper.Length)
+        {
+            helper[currentHelper].SetActive(false);
         }
     }
 }

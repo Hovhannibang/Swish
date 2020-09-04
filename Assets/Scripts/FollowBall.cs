@@ -23,9 +23,11 @@ public class FollowBall : MonoBehaviour
     private readonly float deltaYpos = 1.131371f;
     private readonly Queue<GameObject> obstaclePool = new Queue<GameObject>();
     private readonly Queue<GameObject> gemPool = new Queue<GameObject>();
+    private bool isTutorial;
 
     private void Start()
     {
+        isTutorial = PlayerPrefs.GetInt("isTutorial") == 0;
         followActive = true;
         screenBounds = GetComponent<Camera>().ScreenToWorldPoint(new Vector3(Screen.width, Screen.height, transform.position.z));
         previousSpawnX = screenBounds.x - 3f;
@@ -57,7 +59,10 @@ public class FollowBall : MonoBehaviour
 
     private void FixedUpdate()
     {
-        spawnObstacles();
+        if (!isTutorial)
+        {
+            spawnObstacles();
+        }
     }
 
     public void setPreviousSpawn()
@@ -262,5 +267,10 @@ public class FollowBall : MonoBehaviour
                 previousSpawnY = tempObstacle.transform.position.y;
             }
         }
+    }
+
+    public void setIsTutorial(bool isTutorial)
+    {
+        this.isTutorial = isTutorial;
     }
 }

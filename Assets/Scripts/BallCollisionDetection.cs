@@ -14,9 +14,11 @@ public class BallCollisionDetection : MonoBehaviour
     private GameObject ball;
     private FollowBall fb;
     private bool isColliding;
+    private bool isTutorial;
 
     void Start()
     {
+        isTutorial = PlayerPrefs.GetInt("isTutorial") == 0;
         ball = ballController.getBall();
         fb = ballController.getFollowball();
         uiController = ballController.getUIController();
@@ -35,7 +37,10 @@ public class BallCollisionDetection : MonoBehaviour
 
     public void OnTriggerEnter2D(Collider2D collision)
     {
-        if (isColliding) return;
+        if (isColliding)
+        {
+            return;
+        }
         isColliding = true;
         if (collision.gameObject.CompareTag("destroyBall") || collision.gameObject.CompareTag("Obstacle") || collision.gameObject.CompareTag("ObstacleWallBack"))
         {
@@ -149,9 +154,33 @@ public class BallCollisionDetection : MonoBehaviour
         else if (collision.gameObject.CompareTag("collectibleGem"))
         {
             collision.gameObject.SetActive(false);
+            audioController.playGemSound();
             PlayerPrefs.SetInt("totalGems", uiController.getTotalGems() + 1);
             uiController.getTotalGemsText().text = PlayerPrefs.GetInt("totalGems").ToString();
             shopController.updateAmount();
+        }
+        else if (collision.gameObject.CompareTag("activateTouch"))
+        {
+            touchController.setTouchBlock(false);
+        }
+        else if (collision.gameObject.CompareTag("obstacleTutorial") || collision.gameObject.CompareTag("obstacleWallBackTutorial"))
+        {
+            fb.StartCoroutine(fb.Shake(1f, 0.05f));
+            fb.setFollowActive(false);
+            audioController.playExplosion();
+            Vector2 lastVelocityTut = ballController.getBall().GetComponent<Rigidbody2D>().velocity;
+            foreach (GameObject frag in ball.GetComponent<Explodable>().fragments)
+            {
+                frag.transform.parent = null;
+                frag.SetActive(true);
+                Rigidbody2D fragRb = frag.GetComponent<Rigidbody2D>();
+                fragRb.MovePosition(new Vector2(fragRb.position.x + Random.Range(-.2f, .2f), fragRb.position.y + Random.Range(-.2f, .2f)));
+                fragRb.AddForce(new Vector2(Random.Range(-2f, 2f), Random.Range(-2f, 2f)) + lastVelocityTut * 0.5f, ForceMode2D.Impulse);
+                fragRb.AddTorque(Random.Range(-2f, 2f) * 2f);
+            }
+            ball.SetActive(false);
+            uiController.StartCoroutine(uiController.waitAndRetryTutorial());
+            return;
         }
     }
 
@@ -183,10 +212,14 @@ public class BallCollisionDetection : MonoBehaviour
             {
                 gemAmount /= 2;
             }
-            PlayerPrefs.SetInt("totalGems",uiController.getTotalGems() + gemAmount);
+            PlayerPrefs.SetInt("totalGems", uiController.getTotalGems() + gemAmount);
             uiController.setEarnedGems(gemAmount);
             shopController.updateAmount();
         }
+    }
 
+    public void setIsTutorial(bool isTutorial)
+    {
+        this.isTutorial = isTutorial;
     }
 }

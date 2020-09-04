@@ -19,6 +19,9 @@ TagManager:
   - reset
   - ObstacleWallBack
   - collectibleGem
+  - activateTouch
+  - deactivateTouch
+  - obstacleTutorial
   layers:
   - Default
   - TransparentFX

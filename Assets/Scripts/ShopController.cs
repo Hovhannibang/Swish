@@ -137,8 +137,6 @@ public class ShopController : MonoBehaviour
 
         noAdsButton.GetComponent<IAPButton>().onPurchaseComplete.AddListener(delegate { removeAds(); });
 
-        PlayerPrefs.SetInt("adsRemoved", 1);
-
         if (PlayerPrefs.GetInt("adsRemoved") == 1)
         {
             moreButton.SetActive(false);

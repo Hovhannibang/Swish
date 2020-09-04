@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class AdController : MonoBehaviour, IUnityAdsListener
 {
-    private readonly string gameId = "3754351";
+    private readonly string googleGameId = "3754351";
     private readonly bool testMode = true;
     private readonly string banner = "bannerAd";
     private readonly string rewardedVideo = "rewardedVideo";
@@ -20,18 +20,19 @@ public class AdController : MonoBehaviour, IUnityAdsListener
     public ShopController shopController;
     private int skinNumber;
     private bool ballSkin;
+    private bool isTutorial;
 
 
-    // Start is called before the first frame update
     public void Start()
     {
+        isTutorial = PlayerPrefs.GetInt("isTutorial") == 0;
         doubleButton.interactable = Advertisement.IsReady(rewardedVideo);
         if (doubleButton)
         {
             doubleButton.onClick.AddListener(ShowRewardedVideo);
         }
         Advertisement.AddListener(this);
-        Advertisement.Initialize(gameId, testMode);
+        Advertisement.Initialize(googleGameId, testMode);
         if (PlayerPrefs.GetInt("adsRemoved") == 0)
         {
             StartCoroutine(ShowBannerWhenInitialized());
@@ -60,7 +61,10 @@ public class AdController : MonoBehaviour, IUnityAdsListener
             yield return new WaitForSeconds(0.5f);
         }
         Advertisement.Banner.SetPosition(BannerPosition.BOTTOM_CENTER);
-        Advertisement.Banner.Show(banner);
+        if (!isTutorial)
+        {
+            Advertisement.Banner.Show(banner);
+        }
     }
 
     public void removeBanner()
