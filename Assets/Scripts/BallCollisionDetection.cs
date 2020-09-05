@@ -14,11 +14,9 @@ public class BallCollisionDetection : MonoBehaviour
     private GameObject ball;
     private FollowBall fb;
     private bool isColliding;
-    private bool isTutorial;
 
     void Start()
     {
-        isTutorial = PlayerPrefs.GetInt("isTutorial") == 0;
         ball = ballController.getBall();
         fb = ballController.getFollowball();
         uiController = ballController.getUIController();
@@ -45,42 +43,39 @@ public class BallCollisionDetection : MonoBehaviour
         if (collision.gameObject.CompareTag("destroyBall") || collision.gameObject.CompareTag("Obstacle") || collision.gameObject.CompareTag("ObstacleWallBack"))
         {
             int intScore = int.Parse(score.text);
-            if (collision.gameObject.CompareTag("ObstacleWallBack"))
-            {
-                if (PlayerPrefs.GetInt("ach9") == 0)
-                {
-                    PlayerPrefs.SetInt("achtakeable9", 1);
-                    uiController.activateAchievementInfo(9);
-                }
-            }
             if (intScore >= 200 && uiController.getDifficulty() > 0 && PlayerPrefs.GetInt("ach1") == 0)
+            {
+                PlayerPrefs.SetInt("achtakeable0", 1);
+                uiController.activateAchievementInfo(0);
+            }
+            if (intScore >= 1200 && uiController.getDifficulty() > 0 && PlayerPrefs.GetInt("ach2") == 0)
             {
                 PlayerPrefs.SetInt("achtakeable1", 1);
                 uiController.activateAchievementInfo(1);
             }
-            if (intScore >= 1200 && uiController.getDifficulty() > 0 && PlayerPrefs.GetInt("ach2") == 0)
+            if (intScore >= 2000 && uiController.getDifficulty() > 0 && PlayerPrefs.GetInt("ach3") == 0)
             {
                 PlayerPrefs.SetInt("achtakeable2", 1);
                 uiController.activateAchievementInfo(2);
             }
-            if (intScore >= 2000 && uiController.getDifficulty() > 0 && PlayerPrefs.GetInt("ach3") == 0)
+            if (intScore >= 5000 && uiController.getDifficulty() == 2 && PlayerPrefs.GetInt("ach4") == 0)
             {
                 PlayerPrefs.SetInt("achtakeable3", 1);
                 uiController.activateAchievementInfo(3);
             }
-            if (intScore >= 5000 && uiController.getDifficulty() == 2 && PlayerPrefs.GetInt("ach4") == 0)
+            if (intScore >= 10000 && uiController.getDifficulty() == 2 && PlayerPrefs.GetInt("ach5") == 0)
             {
                 PlayerPrefs.SetInt("achtakeable4", 1);
                 uiController.activateAchievementInfo(4);
             }
-            if (intScore >= 10000 && uiController.getDifficulty() == 2 && PlayerPrefs.GetInt("ach5") == 0)
-            {
-                PlayerPrefs.SetInt("achtakeable5", 1);
-                uiController.activateAchievementInfo(5);
-            }
             ballController.getAdController().ShowInterstitialAd();
             if (collision.gameObject.CompareTag("ObstacleWallBack"))
             {
+                if (PlayerPrefs.GetInt("ach8") == 0)
+                {
+                    PlayerPrefs.SetInt("achtakeable8", 1);
+                    uiController.activateAchievementInfo(8);
+                }
                 uiController.setGameOverPanelComment(int.Parse(score.text), true);
             }
             else
@@ -159,29 +154,6 @@ public class BallCollisionDetection : MonoBehaviour
             uiController.getTotalGemsText().text = PlayerPrefs.GetInt("totalGems").ToString();
             shopController.updateAmount();
         }
-        else if (collision.gameObject.CompareTag("activateTouch"))
-        {
-            touchController.setTouchBlock(false);
-        }
-        else if (collision.gameObject.CompareTag("obstacleTutorial") || collision.gameObject.CompareTag("obstacleWallBackTutorial"))
-        {
-            fb.StartCoroutine(fb.Shake(1f, 0.05f));
-            fb.setFollowActive(false);
-            audioController.playExplosion();
-            Vector2 lastVelocityTut = ballController.getBall().GetComponent<Rigidbody2D>().velocity;
-            foreach (GameObject frag in ball.GetComponent<Explodable>().fragments)
-            {
-                frag.transform.parent = null;
-                frag.SetActive(true);
-                Rigidbody2D fragRb = frag.GetComponent<Rigidbody2D>();
-                fragRb.MovePosition(new Vector2(fragRb.position.x + Random.Range(-.2f, .2f), fragRb.position.y + Random.Range(-.2f, .2f)));
-                fragRb.AddForce(new Vector2(Random.Range(-2f, 2f), Random.Range(-2f, 2f)) + lastVelocityTut * 0.5f, ForceMode2D.Impulse);
-                fragRb.AddTorque(Random.Range(-2f, 2f) * 2f);
-            }
-            ball.SetActive(false);
-            uiController.StartCoroutine(uiController.waitAndRetryTutorial());
-            return;
-        }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -216,10 +188,5 @@ public class BallCollisionDetection : MonoBehaviour
             uiController.setEarnedGems(gemAmount);
             shopController.updateAmount();
         }
-    }
-
-    public void setIsTutorial(bool isTutorial)
-    {
-        this.isTutorial = isTutorial;
     }
 }

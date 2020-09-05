@@ -158,7 +158,6 @@ public class ShopController : MonoBehaviour
             }
             else
             {
-                PlayerPrefs.SetInt("ballSkin" + currentKey, 1);
                 TextMeshProUGUI textMesh = temp.transform.GetChild(2).GetChild(1).GetComponent<TextMeshProUGUI>();
                 if (currentElement[0].EndsWith("/5"))
                 {
@@ -219,7 +218,6 @@ public class ShopController : MonoBehaviour
             }
             else
             {
-                PlayerPrefs.SetInt("trailSkin" + currentKey, 1);
                 TextMeshProUGUI textMesh = temp.transform.GetChild(2).GetChild(1).GetComponent<TextMeshProUGUI>();
                 if (currentElement[0].EndsWith("/5"))
                 {
@@ -357,10 +355,10 @@ public class ShopController : MonoBehaviour
                         setBallColor(colorOrSkin);
                         PlayerPrefs.SetInt("lastBallSkin", number);
 
-                        if (PlayerPrefs.GetInt("ach6") == 0)
+                        if (PlayerPrefs.GetInt("ach5") == 0)
                         {
-                            PlayerPrefs.SetInt("achtakeable6", 1);
-                            uiController.activateAchievementInfo(6);
+                            PlayerPrefs.SetInt("achtakeable5", 1);
+                            uiController.activateAchievementInfo(5);
                         }
                     });
                 }
@@ -466,10 +464,10 @@ public class ShopController : MonoBehaviour
                         setTrailColor(colorOrSkin);
                         PlayerPrefs.SetInt("lastTrailSkin", number);
 
-                        if (PlayerPrefs.GetInt("ach6") == 0)
+                        if (PlayerPrefs.GetInt("ach5") == 0)
                         {
-                            PlayerPrefs.SetInt("achtakeable6", 1);
-                            uiController.activateAchievementInfo(6);
+                            PlayerPrefs.SetInt("achtakeable5", 1);
+                            uiController.activateAchievementInfo(5);
                         }
                     });
                 }
@@ -659,11 +657,11 @@ public class ShopController : MonoBehaviour
         moreButton.SetActive(false);
         noAdsButton.SetActive(false);
         moreButtonAdsRemoved.SetActive(true);
-        if (PlayerPrefs.GetInt("ach12") == 0)
+        if (PlayerPrefs.GetInt("ach11") == 0)
         {
-            PlayerPrefs.SetInt("achtakeable12", 1);
+            PlayerPrefs.SetInt("achtakeable11", 1);
             PlayerPrefs.SetInt("ballSkin20", 1);
-            uiController.activateAchievementInfo(12);
+            uiController.activateAchievementInfo(11);
         }
     }
 }

@@ -21,19 +21,18 @@ public class UIController : MonoBehaviour
      * You can add new entries anywhere in the dictionary, not just append at the end.
      */
     private readonly Dictionary<int, string> achievementDictionary = new Dictionary<int, string> {
-        {0, "Tutorial Master-Finish the tutorial.-25"},
-        {1, "Basic Skills-Reach a score of 200 in normal mode.-50"},
-        {2, "Extreme-Reach a score of 1200 in normal mode.-120"},
-        {3, "Grand Master-Reach a score of 2000 in normal or extreme mode.-200"},
-        {4, "Hacker-Reach a score of 5000 in extreme mode.-500"},
-        {5, "Paul-Reach a score of 10000 in extreme mode.-1000"},
-        {6, "Customizer-Change your ball or trail skin.-50"},
-        {7, "Stars-Rate the game on the app store.-trail*Stars"},
-        {8, "Double Down-Double your earned gems in the game over panel.-trail*Gems"},
-        {9, "Reverse-Touch the back wall.-25"},
-        {10, "???-???-skin*???"},
-        {11, "Zero velocity-Stop the ball.-100"},
-        {12, "Adblocker-Remove ads. Thank you :)-skin*Adblocker"},
+        {0, "Basic Skills-Reach a score of 200 in normal mode.-50"},
+        {1, "Extreme-Reach a score of 1200 in normal mode.-120"},
+        {2, "Grand Master-Reach a score of 2000 in normal or extreme mode.-200"},
+        {3, "Hacker-Reach a score of 5000 in extreme mode.-500"},
+        {4, "Paul-Reach a score of 10000 in extreme mode.-1000"},
+        {5, "Customizer-Change your ball or trail skin.-50"},
+        {6, "Stars-Rate the game on the app store.-trail*Stars"},
+        {7, "Double Down-Double your earned gems in the game over panel.-trail*Gems"},
+        {8, "Reverse-Touch the back wall.-25"},
+        {9, "???-???-skin*???"},
+        {10, "Zero velocity-Stop the ball.-100"},
+        {11, "Adblocker-Remove ads. Thank you :)-skin*Adblocker"},
     };
 
     private readonly Vector2[,] ballPreviewLinePositions = new Vector2[5, 4]
@@ -56,9 +55,7 @@ public class UIController : MonoBehaviour
 
     private int difficulty;
     private int previewNr;
-    private int currentHelper;
     private bool random3Flip;
-    private bool isTutorial;
     private float scoreFloat = 0f;
     private Camera mainCamera;
     private Rigidbody2D ballRb;
@@ -105,7 +102,6 @@ public class UIController : MonoBehaviour
     public TextMeshProUGUI extremeButtonInfoLocked;
     public TextMeshProUGUI extremeButtonIngameInfo;
     public TextMeshProUGUI extremeButtonIngameInfoLocked;
-    public Button tutorialButton;
     public Button customizeButton;
     public Button playButton;
     public Button moreButton;
@@ -116,7 +112,6 @@ public class UIController : MonoBehaviour
     public Button questionMarkButton;
     public Button pausePanelHomeButton;
     public Button pausePanelRestartButton;
-    public Button pausePanelSkipTutorialButton;
     public BallController ballController;
     public AdController adController;
     public TimeController timeController;
@@ -140,7 +135,6 @@ public class UIController : MonoBehaviour
 
     private void Start()
     {
-        isTutorial = PlayerPrefs.GetInt("isTutorial") == 0;
         previewNr = Random.Range(0, 5);
         Application.targetFrameRate = 60;
         Time.fixedDeltaTime = (1f / Application.targetFrameRate);
@@ -188,28 +182,13 @@ public class UIController : MonoBehaviour
                 highScoreDiff.text = "EXTREME";
                 break;
         }
-        if (PlayerPrefs.GetInt("achtakeable10") == 1 || PlayerPrefs.GetInt("ach10") == 1)
+        if (PlayerPrefs.GetInt("achtakeable9") == 1 || PlayerPrefs.GetInt("ach9") == 1)
         {
             questionMarkButton.interactable = false;
         }
         intitializeAchievements();
         setRandomBallPreview();
         totalGemsText.text = PlayerPrefs.GetInt("totalGems").ToString();
-
-        if (isTutorial)
-        {
-            currentHelper = -1;
-            activateNextHelp();
-            playButton.gameObject.SetActive(false);
-            customizeButton.gameObject.SetActive(false);
-            moreButton.gameObject.SetActive(false);
-            noAdsButton.gameObject.SetActive(false);
-            highScoreText.gameObject.SetActive(false);
-            tutorialButton.gameObject.SetActive(true);
-            pausePanelHomeButton.gameObject.SetActive(false);
-            pausePanelRestartButton.gameObject.SetActive(false);
-            pausePanelSkipTutorialButton.gameObject.SetActive(true);
-        }
     }
 
     void FixedUpdate()
@@ -235,31 +214,13 @@ public class UIController : MonoBehaviour
                 resetObstacle.tag = "reset";
                 gameOverPanelComment.text = "Why would you want the ball to get stuck?";
                 resetObstacle.SetActive(false);
-                if (PlayerPrefs.GetInt("ach11") == 0)
+                if (PlayerPrefs.GetInt("ach10") == 0)
                 {
-                    PlayerPrefs.SetInt("achtakeable11", 1);
-                    activateAchievementInfo(11);
+                    PlayerPrefs.SetInt("achtakeable10", 1);
+                    activateAchievementInfo(10);
                 }
             }
         }
-    }
-
-    public void skipTutorial()
-    {
-        isTutorial = false;
-        PlayerPrefs.SetInt("isTutorial", 1);
-        PlayerPrefs.SetInt("lastDifficulty", 1);
-        CycleHighScoresInt(0);
-        playButton.gameObject.SetActive(true);
-        customizeButton.gameObject.SetActive(true);
-        moreButton.gameObject.SetActive(true);
-        noAdsButton.gameObject.SetActive(true);
-        highScoreText.gameObject.SetActive(true);
-        tutorialButton.gameObject.SetActive(false);
-        pausePanelHomeButton.gameObject.SetActive(true);
-        pausePanelRestartButton.gameObject.SetActive(true);
-        pausePanelSkipTutorialButton.gameObject.SetActive(false);
-        stopGame();
     }
 
     public void startGame()
@@ -269,13 +230,10 @@ public class UIController : MonoBehaviour
         score.text = "0";
         earnedGems.text = "0";
         ball.transform.position = ballStartPos;
-        if (!isTutorial)
-        {
-            score.gameObject.SetActive(true);
-            scoreAnimator.SetBool("fadeIn", true);
-            difficultySelectAnimator.SetBool("fadeIn", false);
-            difficultySelectAnimator.SetBool("fade", true);
-        }
+        score.gameObject.SetActive(true);
+        scoreAnimator.SetBool("fadeIn", true);
+        difficultySelectAnimator.SetBool("fadeIn", false);
+        difficultySelectAnimator.SetBool("fade", true);
         middlePanelAnimator.SetBool("fadeIn", false);
         middlePanelAnimator.SetBool("fade", true);
         titlePanelAnimator.SetBool("fadeIn", false);
@@ -455,14 +413,6 @@ public class UIController : MonoBehaviour
     public IEnumerator waitAndRetry()
     {
         yield return new WaitForSeconds(0.5f);
-        retry();
-        timeController.setGamePaused(false);
-        yield return null;
-    }
-
-    public IEnumerator waitAndRetryTutorial()
-    {
-        yield return new WaitForSeconds(1f);
         retry();
         timeController.setGamePaused(false);
         yield return null;
@@ -655,11 +605,11 @@ public class UIController : MonoBehaviour
             Application.OpenURL("itms-apps://itunes.apple.com/app/idcom.HovGames.Swish");
 #endif
         yield return new WaitForSeconds(2f);
-        if (PlayerPrefs.GetInt("ach7") == 0)
+        if (PlayerPrefs.GetInt("ach6") == 0)
         {
-            PlayerPrefs.SetInt("achtakeable7", 1);
+            PlayerPrefs.SetInt("achtakeable6", 1);
             PlayerPrefs.SetInt("trailSkin9", 1);
-            activateAchievementInfo(7);
+            activateAchievementInfo(6);
         }
     }
 
@@ -749,21 +699,21 @@ public class UIController : MonoBehaviour
 
     public void unlockDoubleDownAchievement()
     {
-        if (PlayerPrefs.GetInt("ach8") == 0)
+        if (PlayerPrefs.GetInt("ach7") == 0)
         {
-            PlayerPrefs.SetInt("achtakeable8", 1);
+            PlayerPrefs.SetInt("achtakeable7", 1);
             PlayerPrefs.SetInt("trailSkin8", 1);
-            activateAchievementInfo(8);
+            activateAchievementInfo(7);
         }
     }
 
     public void unlockQuestionMarkAchievement()
     {
-        if (PlayerPrefs.GetInt("ach10") == 0)
+        if (PlayerPrefs.GetInt("ach9") == 0)
         {
-            PlayerPrefs.SetInt("achtakeable10", 1);
+            PlayerPrefs.SetInt("achtakeable9", 1);
             PlayerPrefs.SetInt("ballSkin26", 1);
-            activateAchievementInfo(10);
+            activateAchievementInfo(9);
         }
     }
 
@@ -940,29 +890,6 @@ public class UIController : MonoBehaviour
                 ballPreviewLines[i].transform.localPosition = ballPreviewLinePositions[previewNr, i];
                 ballPreviewLines[i].transform.localRotation = Quaternion.Euler(0, 0, ballPreviewLineRotations[previewNr, i]);
             }
-        }
-    }
-
-    public void setIsTutorial(bool isTutorial)
-    {
-        this.isTutorial = isTutorial;
-    }
-
-    public void activateNextHelp()
-    {
-        currentHelper++;
-        if (currentHelper < helper.Length)
-        {
-            helper[currentHelper].SetActive(true);
-            helperLines[currentHelper].SetActive(true);
-        }
-    }
-
-    public void deactivateCurrentHelper()
-    {
-        if(currentHelper < helper.Length)
-        {
-            helper[currentHelper].SetActive(false);
         }
     }
 }

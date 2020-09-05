@@ -8,7 +8,6 @@ public class AdController : MonoBehaviour, IUnityAdsListener
 {
     private readonly string googleGameId = "3754351";
     private readonly bool testMode = true;
-    private readonly string banner = "bannerAd";
     private readonly string rewardedVideo = "rewardedVideo";
     private readonly string rewardedVideoGems = "rewardedVideoGems";
     private readonly string rewardedVideoSkin = "rewardedVideoSkin";
@@ -20,12 +19,10 @@ public class AdController : MonoBehaviour, IUnityAdsListener
     public ShopController shopController;
     private int skinNumber;
     private bool ballSkin;
-    private bool isTutorial;
 
 
     public void Start()
     {
-        isTutorial = PlayerPrefs.GetInt("isTutorial") == 0;
         doubleButton.interactable = Advertisement.IsReady(rewardedVideo);
         if (doubleButton)
         {
@@ -61,10 +58,6 @@ public class AdController : MonoBehaviour, IUnityAdsListener
             yield return new WaitForSeconds(0.5f);
         }
         Advertisement.Banner.SetPosition(BannerPosition.BOTTOM_CENTER);
-        if (!isTutorial)
-        {
-            Advertisement.Banner.Show(banner);
-        }
     }
 
     public void removeBanner()
