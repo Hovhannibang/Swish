@@ -17,8 +17,7 @@ public class UIController : MonoBehaviour
     private readonly char[] splitColon = { ':' };
 
     /* 
-     * If you want to add a new achievement, just add an entry in the dictionary with a new key. Keep the keys in perfect ascending order. 
-     * You can add new entries anywhere in the dictionary, not just append at the end.
+     * If you want to add a new achievement, just add an entry in the dictionary with a new key. Keep the keys in perfect ascending order, starting with 0.
      */
     private readonly Dictionary<int, string> achievementDictionary = new Dictionary<int, string> {
         {0, "Basic Skills-Reach a score of 200 in normal mode.-50"},
@@ -90,6 +89,7 @@ public class UIController : MonoBehaviour
     public GameObject backWall;
     public GameObject pauseButton;
     public GameObject pausePanel;
+    public GameObject howToPlayPanel;
     public TextMeshProUGUI gameOverPanelComment;
     public TextMeshProUGUI highScoreText;
     public TextMeshProUGUI highScore;
@@ -102,16 +102,11 @@ public class UIController : MonoBehaviour
     public TextMeshProUGUI extremeButtonInfoLocked;
     public TextMeshProUGUI extremeButtonIngameInfo;
     public TextMeshProUGUI extremeButtonIngameInfoLocked;
-    public Button customizeButton;
-    public Button playButton;
-    public Button moreButton;
     public Button moreButtonAdsRemoved;
     public Button noAdsButton;
     public Button extremeButton;
     public Button extremeButtonIngame;
     public Button questionMarkButton;
-    public Button pausePanelHomeButton;
-    public Button pausePanelRestartButton;
     public BallController ballController;
     public AdController adController;
     public TimeController timeController;
@@ -128,8 +123,6 @@ public class UIController : MonoBehaviour
     public GameObject highScoreSignE;
     public GameObject highScoreSignN;
     public GameObject highScoreSignX;
-    public GameObject[] helper;
-    public GameObject[] helperLines;
     public GameObject[] ballPreviewLines;
     public AnimationClip[] ballPreviewAnimations;
 
@@ -556,6 +549,11 @@ public class UIController : MonoBehaviour
 
     public void UpdateExtremeLock()
     {
+        if(PlayerPrefs.GetInt("hasPlayed") == 0)
+        {
+            howToPlayPanel.SetActive(true);
+            PlayerPrefs.SetInt("hasPlayed", 1);
+        }
         if (PlayerPrefs.GetInt("highScoreN") >= 1200)
         {
             extremeButton.interactable = true;
@@ -774,28 +772,6 @@ public class UIController : MonoBehaviour
                 highScoreDiff.text = "EXTREME";
                 break;
             case "EXTREME":
-                highScore.text = PlayerPrefs.GetInt("highScoreE").ToString();
-                highScoreDiff.color = highScoreText.color = highScore.color = blue;
-                highScoreDiff.text = "EASY";
-                break;
-        }
-    }
-
-    private void CycleHighScoresInt(int diff)
-    {
-        switch (diff)
-        {
-            case 0:
-                highScore.text = PlayerPrefs.GetInt("highScoreN").ToString();
-                highScoreDiff.color = highScoreText.color = highScore.color = green;
-                highScoreDiff.text = "NORMAL";
-                break;
-            case 1:
-                highScore.text = PlayerPrefs.GetInt("highScoreX").ToString();
-                highScoreDiff.color = highScoreText.color = highScore.color = red;
-                highScoreDiff.text = "EXTREME";
-                break;
-            case 2:
                 highScore.text = PlayerPrefs.GetInt("highScoreE").ToString();
                 highScoreDiff.color = highScoreText.color = highScore.color = blue;
                 highScoreDiff.text = "EASY";
