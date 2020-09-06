@@ -8,6 +8,7 @@ public class AdController : MonoBehaviour, IUnityAdsListener
 {
     private readonly string googleGameId = "3754351";
     private readonly bool testMode = true;
+    private readonly string banner = "bannerAd";
     private readonly string rewardedVideo = "rewardedVideo";
     private readonly string rewardedVideoGems = "rewardedVideoGems";
     private readonly string rewardedVideoSkin = "rewardedVideoSkin";
@@ -30,10 +31,12 @@ public class AdController : MonoBehaviour, IUnityAdsListener
         }
         Advertisement.AddListener(this);
         Advertisement.Initialize(googleGameId, testMode);
+
         if (PlayerPrefs.GetInt("adsRemoved") == 0)
         {
             StartCoroutine(ShowBannerWhenInitialized());
         }
+
         StartCoroutine(countTimeForAdCoroutine());
         StartCoroutine(LoadRewardedGemsBanner());
         StartCoroutine(LoadRewardedSkinBanner());
@@ -58,6 +61,7 @@ public class AdController : MonoBehaviour, IUnityAdsListener
             yield return new WaitForSeconds(0.5f);
         }
         Advertisement.Banner.SetPosition(BannerPosition.BOTTOM_CENTER);
+        Advertisement.Banner.Show(banner);
     }
 
     public void removeBanner()
