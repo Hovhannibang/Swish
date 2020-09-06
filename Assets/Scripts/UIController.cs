@@ -213,6 +213,14 @@ public class UIController : MonoBehaviour
                     activateAchievementInfo(10);
                 }
             }
+            if(ball.transform.position.y < -3.3f || ball.transform.position.y > 3.3f)
+            {
+                resetObstacle.SetActive(true);
+                resetObstacle.tag = "destroyBall";
+                ball.GetComponent<BallCollisionDetection>().OnTriggerEnter2D(resetObstacle.GetComponent<Collider2D>());
+                resetObstacle.tag = "reset";
+                resetObstacle.SetActive(false);
+            }
         }
     }
 

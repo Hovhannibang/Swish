@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class AdController : MonoBehaviour, IUnityAdsListener
 {
     private readonly string googleGameId = "3754351";
-    private readonly bool testMode = true;
+    private readonly bool testMode = false;
     private readonly string banner = "bannerAd";
     private readonly string rewardedVideo = "rewardedVideo";
     private readonly string rewardedVideoGems = "rewardedVideoGems";
