@@ -43,27 +43,27 @@ public class BallCollisionDetection : MonoBehaviour
         if (collision.gameObject.CompareTag("destroyBall") || collision.gameObject.CompareTag("Obstacle") || collision.gameObject.CompareTag("ObstacleWallBack"))
         {
             int intScore = int.Parse(score.text);
-            if (intScore >= 200 && uiController.getDifficulty() > 0 && PlayerPrefs.GetInt("ach1") == 0)
+            if (intScore >= 200 && uiController.getDifficulty() > 0 && PlayerPrefs.GetInt("ach0") == 0)
             {
                 PlayerPrefs.SetInt("achtakeable0", 1);
                 uiController.activateAchievementInfo(0);
             }
-            if (intScore >= 1200 && uiController.getDifficulty() > 0 && PlayerPrefs.GetInt("ach2") == 0)
+            if (intScore >= 1200 && uiController.getDifficulty() > 0 && PlayerPrefs.GetInt("ach1") == 0)
             {
                 PlayerPrefs.SetInt("achtakeable1", 1);
                 uiController.activateAchievementInfo(1);
             }
-            if (intScore >= 2000 && uiController.getDifficulty() > 0 && PlayerPrefs.GetInt("ach3") == 0)
+            if (intScore >= 2000 && uiController.getDifficulty() > 0 && PlayerPrefs.GetInt("ach2") == 0)
             {
                 PlayerPrefs.SetInt("achtakeable2", 1);
                 uiController.activateAchievementInfo(2);
             }
-            if (intScore >= 5000 && uiController.getDifficulty() == 2 && PlayerPrefs.GetInt("ach4") == 0)
+            if (intScore >= 5000 && uiController.getDifficulty() == 2 && PlayerPrefs.GetInt("ach3") == 0)
             {
                 PlayerPrefs.SetInt("achtakeable3", 1);
                 uiController.activateAchievementInfo(3);
             }
-            if (intScore >= 10000 && uiController.getDifficulty() == 2 && PlayerPrefs.GetInt("ach5") == 0)
+            if (intScore >= 10000 && uiController.getDifficulty() == 2 && PlayerPrefs.GetInt("ach4") == 0)
             {
                 PlayerPrefs.SetInt("achtakeable4", 1);
                 uiController.activateAchievementInfo(4);
